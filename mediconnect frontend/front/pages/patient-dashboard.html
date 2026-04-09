@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MediConnect — Espace Patient</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy-950:#040d1a;--navy-900:#071428;--navy-800:#0c1f3f;--surface-1:#0d1b35;--surface-2:#111f3e;--surface-3:#162848;--surface-4:#1d3260;--teal-500:#00c9a7;--teal-400:#1de9c8;--teal-600:#00a887;--text-1:#f0f4ff;--text-2:#a8b8d8;--text-3:#6b80a6;--border:rgba(255,255,255,0.08);--border-2:rgba(0,201,167,0.25);--glass:rgba(255,255,255,0.04);--success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;--font-head:'Sora',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;--r-md:12px;--r-lg:16px;--r-xl:24px;--sidebar:260px;--ease:cubic-bezier(0.4,0,0.2,1)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--navy-950);color:var(--text-1);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none} button{cursor:pointer;border:none;background:none;font:inherit}
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--navy-900)} ::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:3px}
+
+    /* ── Sidebar ── */
+    .sidebar{width:var(--sidebar);background:var(--surface-1);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100;transition:transform .3s var(--ease)}
+    .sidebar-brand{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;font-family:var(--font-head);font-weight:700;font-size:1.15rem}
+    .brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--teal-500),var(--teal-400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--navy-950)}
+    .accent{color:var(--teal-500)}
+    .sidebar-user{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+    .su-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--surface-4),var(--navy-600));border:2px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--teal-500);flex-shrink:0}
+    .su-name{font-size:.875rem;font-weight:600;color:var(--text-1)}
+    .su-role{font-size:.72rem;color:var(--teal-500);font-family:var(--font-mono)}
+    .sidebar-nav{flex:1;padding:1rem .75rem;display:flex;flex-direction:column;gap:.25rem;overflow-y:auto}
+    .nav-section-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);padding:.75rem .5rem .35rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:var(--r-md);font-size:.875rem;color:var(--text-2);transition:all .2s;cursor:pointer;position:relative}
+    .nav-item i{width:18px;text-align:center;font-size:.9rem}
+    .nav-item:hover{background:var(--glass);color:var(--text-1)}
+    .nav-item.active{background:rgba(0,201,167,.1);color:var(--teal-500);border:1px solid rgba(0,201,167,.15)}
+    .nav-item.active i{color:var(--teal-500)}
+    .nav-badge{margin-left:auto;background:var(--teal-500);color:var(--navy-950);font-size:.65rem;font-weight:700;font-family:var(--font-mono);padding:.1rem .45rem;border-radius:999px}
+    .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+    .btn-logout{display:flex;align-items:center;gap:.6rem;color:var(--text-3);font-size:.875rem;transition:color .2s;padding:.5rem .25rem}
+    .btn-logout:hover{color:var(--danger)}
+
+    /* ── Main ── */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--surface-1);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+    .topbar-left{display:flex;align-items:center;gap:1rem}
+    .page-title{font-family:var(--font-head);font-size:1.1rem;font-weight:600}
+    .page-path{font-size:.78rem;color:var(--text-3);font-family:var(--font-mono)}
+    .topbar-right{display:flex;align-items:center;gap:.75rem}
+    .search-wrap{position:relative}
+    .search-input{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.55rem 1rem .55rem 2.5rem;font-size:.875rem;color:var(--text-1);outline:none;width:240px;transition:all .2s;font-family:var(--font-body)}
+    .search-input:focus{border-color:var(--teal-500);box-shadow:0 0 0 3px rgba(0,201,167,.1);width:280px}
+    .search-input::placeholder{color:var(--text-3)}
+    .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:.8rem;pointer-events:none}
+    .icon-btn{width:36px;height:36px;border-radius:var(--r-md);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.875rem;color:var(--text-2);transition:all .2s;position:relative}
+    .icon-btn:hover{border-color:var(--border-2);color:var(--teal-500);background:rgba(0,201,167,.06)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--teal-500);border:2px solid var(--surface-1)}
+
+    /* ── Content ── */
+    .content{padding:2rem;flex:1}
+    .welcome-banner{background:linear-gradient(135deg,var(--surface-2),var(--surface-3));border:1px solid var(--border);border-radius:var(--r-xl);padding:1.75rem 2rem;margin-bottom:1.75rem;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;animation:fadeUp .4s var(--ease)}
+    .welcome-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,201,167,.08),transparent 70%);border-radius:50%}
+    .wb-left h2{font-family:var(--font-head);font-size:1.4rem;font-weight:700;margin-bottom:.35rem}
+    .wb-left p{color:var(--text-2);font-size:.875rem}
+    .wb-right{display:flex;gap:.75rem;flex-shrink:0}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;border-radius:var(--r-md);font-size:.875rem;font-weight:500;transition:all .2s var(--ease);white-space:nowrap;font-family:var(--font-body)}
+    .btn-primary{background:var(--teal-500);color:var(--navy-950);box-shadow:0 0 18px rgba(0,201,167,.25)}
+    .btn-primary:hover{background:var(--teal-400);transform:translateY(-1px);box-shadow:0 0 28px rgba(0,201,167,.4)}
+    .btn-secondary{background:var(--glass);border:1px solid var(--border);color:var(--text-1)}
+    .btn-secondary:hover{border-color:var(--border-2);background:rgba(0,201,167,.06)}
+
+    /* ── Stats Grid ── */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
+    @media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+    .stat-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;transition:all .25s;animation:fadeUp .4s var(--ease) both}
+    .stat-card:hover{border-color:var(--border-2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+    .stat-icon{width:46px;height:46px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .si-teal{background:rgba(0,201,167,.12);color:var(--teal-500);border:1px solid rgba(0,201,167,.2)}
+    .si-blue{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.2)}
+    .si-purple{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.2)}
+    .si-amber{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+    .stat-info .val{font-family:var(--font-head);font-size:1.6rem;font-weight:700;line-height:1}
+    .stat-info .lbl{font-size:.78rem;color:var(--text-3);margin-top:.2rem}
+    .stat-info .delta{font-size:.72rem;font-family:var(--font-mono);color:var(--success);margin-top:.15rem}
+
+    /* ── Two-col layout ── */
+    .two-col{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:1200px){.two-col{grid-template-columns:1fr}}
+
+    /* ── Card ── */
+    .card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;animation:fadeUp .4s var(--ease) both}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+    .card-title{font-family:var(--font-head);font-size:1rem;font-weight:600}
+    .card-action{font-size:.8rem;color:var(--teal-500);font-weight:500;cursor:pointer;transition:opacity .2s}
+    .card-action:hover{opacity:.75}
+
+    /* ── Appointment List ── */
+    .appt-list{display:flex;flex-direction:column;gap:.75rem}
+    .appt-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--surface-3);border-radius:var(--r-lg);border:1px solid var(--border);transition:all .2s;cursor:pointer}
+    .appt-item:hover{border-color:var(--border-2);transform:translateX(3px)}
+    .appt-time-block{text-align:center;min-width:52px;flex-shrink:0}
+    .appt-time{font-family:var(--font-mono);font-size:1rem;font-weight:700;color:var(--teal-500)}
+    .appt-date{font-size:.68rem;color:var(--text-3)}
+    .appt-divider{width:1px;height:40px;background:var(--border)}
+    .appt-doc-avatar{width:40px;height:40px;border-radius:50%;background:var(--surface-4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;border:2px solid var(--border);flex-shrink:0}
+    .av-a{color:#3b82f6} .av-b{color:#8b5cf6} .av-c{color:var(--teal-500)} .av-d{color:#f59e0b}
+    .appt-info{flex:1}
+    .appt-doc{font-size:.9rem;font-weight:600;color:var(--text-1)}
+    .appt-spec{font-size:.75rem;color:var(--text-3)}
+    .appt-right{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+    .badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-family:var(--font-mono);font-weight:500}
+    .b-confirm{background:rgba(0,201,167,.1);color:var(--teal-500);border:1px solid rgba(0,201,167,.2)}
+    .b-pending{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+    .b-complete{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+    .b-cancel{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+    .appt-type{font-size:.72rem;color:var(--text-3)}
+
+    /* ── Doctor Search Card (right col) ── */
+    .doctor-search-card{display:flex;flex-direction:column;gap:.75rem}
+    .search-filter{display:flex;flex-direction:column;gap:.6rem;margin-bottom:.5rem}
+    .filter-input{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.6rem .9rem;font-size:.85rem;color:var(--text-1);outline:none;transition:border-color .2s;font-family:var(--font-body);width:100%}
+    .filter-input:focus{border-color:var(--teal-500)}
+    .filter-input::placeholder{color:var(--text-3)}
+    select.filter-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b80a6' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem}
+    .doc-card{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:all .2s}
+    .doc-card:hover{border-color:var(--border-2);background:rgba(0,201,167,.04)}
+    .doc-av{width:44px;height:44px;border-radius:50%;background:var(--surface-4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;border:2px solid var(--border-2);flex-shrink:0}
+    .doc-details{flex:1}
+    .doc-name{font-size:.875rem;font-weight:600}
+    .doc-spec{font-size:.72rem;color:var(--teal-500);font-family:var(--font-mono)}
+    .doc-meta{font-size:.7rem;color:var(--text-3);display:flex;align-items:center;gap:.4rem;margin-top:.15rem}
+    .stars-sm{display:flex;gap:1px}
+    .stars-sm i{font-size:.6rem;color:#f59e0b}
+    .doc-avail{font-size:.7rem;font-family:var(--font-mono);padding:.15rem .45rem;border-radius:999px;background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+
+    /* ── Health Record ── */
+    .health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+    @media(max-width:900px){.health-grid{grid-template-columns:repeat(2,1fr)}}
+    .health-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.25rem;animation:fadeUp .4s var(--ease) both}
+    .hc-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+    .hc-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+    .hi-red{background:rgba(239,68,68,.1);color:#ef4444}
+    .hi-blue{background:rgba(59,130,246,.1);color:#3b82f6}
+    .hi-teal{background:rgba(0,201,167,.1);color:var(--teal-500)}
+    .hi-amber{background:rgba(245,158,11,.1);color:#f59e0b}
+    .hi-green{background:rgba(34,197,94,.1);color:#22c55e}
+    .hi-purple{background:rgba(139,92,246,.1);color:#8b5cf6}
+    .hc-label{font-size:.75rem;color:var(--text-3)}
+    .hc-value{font-family:var(--font-mono);font-size:1.1rem;font-weight:600;color:var(--text-1)}
+    .hc-sub{font-size:.7rem;color:var(--text-3);margin-top:.1rem}
+
+    /* ── Chat Widget ── */
+    .chat-container{display:flex;flex-direction:column;height:400px}
+    .chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.6rem;padding:.5rem 0;margin-bottom:.75rem}
+    .msg{max-width:80%;display:flex;flex-direction:column;gap:.2rem}
+    .msg-content{padding:.65rem .9rem;border-radius:var(--r-md);font-size:.875rem;line-height:1.5}
+    .msg-time{font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)}
+    .msg.received .msg-content{background:var(--surface-3);border:1px solid var(--border);color:var(--text-1);border-radius:4px var(--r-md) var(--r-md) var(--r-md)}
+    .msg.sent{align-self:flex-end;align-items:flex-end}
+    .msg.sent .msg-content{background:var(--teal-500);color:var(--navy-950);font-weight:500;border-radius:var(--r-md) 4px var(--r-md) var(--r-md)}
+    .msg.sent .msg-time{text-align:right}
+    .chat-input-wrap{display:flex;gap:.5rem}
+    .chat-input{flex:1;background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.65rem 1rem;color:var(--text-1);font-size:.875rem;outline:none;transition:border-color .2s;font-family:var(--font-body)}
+    .chat-input:focus{border-color:var(--teal-500)}
+    .chat-send{width:38px;height:38px;background:var(--teal-500);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--navy-950);font-size:.9rem;flex-shrink:0;transition:all .2s}
+    .chat-send:hover{background:var(--teal-400);transform:scale(1.05)}
+
+    /* ── Notifications ── */
+    .notif-list{display:flex;flex-direction:column;gap:.5rem}
+    .notif-item{display:flex;gap:.75rem;padding:.75rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid var(--border);border-left:3px solid transparent;transition:all .2s}
+    .notif-item.unread{border-left-color:var(--teal-500);background:rgba(0,201,167,.04)}
+    .notif-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+    .ni-teal{background:rgba(0,201,167,.12);color:var(--teal-500)}
+    .ni-blue{background:rgba(59,130,246,.12);color:#3b82f6}
+    .ni-amber{background:rgba(245,158,11,.12);color:#f59e0b}
+    .notif-text{font-size:.82rem;color:var(--text-1);line-height:1.5}
+    .notif-time{font-size:.68rem;color:var(--text-3);font-family:var(--font-mono);margin-top:.15rem}
+
+    /* ── Booking Modal ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(4,13,26,.88);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;width:100%;max-width:500px;box-shadow:0 40px 80px rgba(0,0,0,.6);animation:scaleIn .25s var(--ease)}
+    .modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+    .modal-title{font-family:var(--font-head);font-size:1.15rem;font-weight:600}
+    .close-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-3);border:1px solid var(--border);cursor:pointer;transition:all .2s}
+    .close-btn:hover{border-color:var(--danger);color:var(--danger)}
+    .modal-form{display:flex;flex-direction:column;gap:1rem}
+    .form-group{display:flex;flex-direction:column;gap:.35rem}
+    .form-label{font-size:.82rem;font-weight:500;color:var(--text-2)}
+    .form-input{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.65rem .9rem;color:var(--text-1);font-size:.875rem;outline:none;transition:border-color .2s;font-family:var(--font-body);width:100%}
+    .form-input:focus{border-color:var(--teal-500)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+    .type-btn{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.65rem;text-align:center;cursor:pointer;font-size:.8rem;color:var(--text-2);transition:all .2s;font-family:var(--font-body)}
+    .type-btn i{display:block;font-size:1rem;margin-bottom:.3rem}
+    .type-btn.active{border-color:var(--teal-500);background:rgba(0,201,167,.1);color:var(--teal-500)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+    @media(max-width:900px){.main{margin-left:0}.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fa-solid fa-stethoscope"></i></div>
+      Medi<span class="accent">Connect</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="su-avatar">SA</div>
+      <div><div class="su-name">Sana Amara</div><div class="su-role">Patient</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="showSection('dashboard')"><i class="fa-solid fa-house"></i>Tableau de bord</div>
+      <div class="nav-item" onclick="showSection('appointments')"><i class="fa-solid fa-calendar-check"></i>Mes rendez-vous<span class="nav-badge">2</span></div>
+      <div class="nav-item" onclick="showSection('doctors')"><i class="fa-solid fa-user-doctor"></i>Trouver un médecin</div>
+      <div class="nav-item" onclick="showSection('chat')"><i class="fa-solid fa-comments"></i>Messagerie<span class="nav-badge">3</span></div>
+      <div class="nav-section-label">Santé</div>
+      <div class="nav-item" onclick="showSection('health')"><i class="fa-solid fa-heart-pulse"></i>Mon dossier santé</div>
+      <div class="nav-item" onclick="showSection('prescriptions')"><i class="fa-solid fa-file-prescription"></i>Ordonnances</div>
+      <div class="nav-item" onclick="showSection('reviews')"><i class="fa-solid fa-star"></i>Mes avis</div>
+      <div class="nav-section-label">Compte</div>
+      <div class="nav-item" onclick="showSection('notifications')"><i class="fa-solid fa-bell"></i>Notifications<span class="nav-badge">5</span></div>
+      <div class="nav-item" onclick="showSection('profile')"><i class="fa-solid fa-user-gear"></i>Mon profil</div>
+      <div class="nav-item" onclick="showSection('settings')"><i class="fa-solid fa-gear"></i>Paramètres</div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="login.html" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i>Déconnexion</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title" id="pageTitle">Tableau de bord</div>
+        <span class="page-path" id="pagePath">Accueil / Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input class="search-input" placeholder="Rechercher médecin, spécialité…"/>
+        </div>
+        <button class="icon-btn" onclick="showSection('notifications')"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+        <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+        <div class="su-avatar" style="cursor:pointer" onclick="showSection('profile')">SA</div>
+      </div>
+    </header>
+
+    <div class="content" id="mainContent">
+      <!-- Dashboard Section -->
+      <div id="sec-dashboard">
+        <div class="welcome-banner">
+          <div class="wb-left">
+            <h2>Bonjour, Sana <span style="font-size:1.3rem">👋</span></h2>
+            <p>Vous avez <strong style="color:var(--teal-500)">2 rendez-vous</strong> aujourd'hui. Bonne santé !</p>
+          </div>
+          <div class="wb-right">
+            <button class="btn btn-secondary"><i class="fa-solid fa-robot"></i>Chatbot médical</button>
+            <button class="btn btn-primary" onclick="openBooking()"><i class="fa-solid fa-calendar-plus"></i>Nouveau RDV</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card" style="animation-delay:.05s"><div class="stat-icon si-teal"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-info"><div class="val">8</div><div class="lbl">Rendez-vous ce mois</div><div class="delta">↑ +2 vs mois dernier</div></div></div>
+          <div class="stat-card" style="animation-delay:.1s"><div class="stat-icon si-blue"><i class="fa-solid fa-user-doctor"></i></div><div class="stat-info"><div class="val">3</div><div class="lbl">Médecins consultés</div><div class="delta">↑ +1 nouveau</div></div></div>
+          <div class="stat-card" style="animation-delay:.15s"><div class="stat-icon si-purple"><i class="fa-solid fa-file-prescription"></i></div><div class="stat-info"><div class="val">5</div><div class="lbl">Ordonnances actives</div><div class="delta" style="color:var(--warning)">⚠ 1 expire bientôt</div></div></div>
+          <div class="stat-card" style="animation-delay:.2s"><div class="stat-icon si-amber"><i class="fa-solid fa-star"></i></div><div class="stat-info"><div class="val">4.8</div><div class="lbl">Satisfaction moyenne</div><div class="delta">basé sur 6 avis</div></div></div>
+        </div>
+
+        <div class="two-col">
+          <!-- Appointments -->
+          <div class="card" style="animation-delay:.25s">
+            <div class="card-header">
+              <span class="card-title">Prochains rendez-vous</span>
+              <span class="card-action" onclick="showSection('appointments')">Voir tout →</span>
+            </div>
+            <div class="appt-list">
+              <div class="appt-item">
+                <div class="appt-time-block"><div class="appt-time">09:30</div><div class="appt-date">Auj.</div></div>
+                <div class="appt-divider"></div>
+                <div class="appt-doc-avatar av-a">KS</div>
+                <div class="appt-info"><div class="appt-doc">Dr. Karim Salah</div><div class="appt-spec">Cardiologie</div></div>
+                <div class="appt-right"><span class="badge b-confirm">Confirmé</span><span class="appt-type"><i class="fa-solid fa-video"></i> Vidéo</span></div>
+              </div>
+              <div class="appt-item">
+                <div class="appt-time-block"><div class="appt-time">14:00</div><div class="appt-date">Auj.</div></div>
+                <div class="appt-divider"></div>
+                <div class="appt-doc-avatar av-b">NB</div>
+                <div class="appt-info"><div class="appt-doc">Dr. Nadia Belhaj</div><div class="appt-spec">Neurologie</div></div>
+                <div class="appt-right"><span class="badge b-pending">En attente</span><span class="appt-type"><i class="fa-solid fa-comment"></i> Chat</span></div>
+              </div>
+              <div class="appt-item">
+                <div class="appt-time-block"><div class="appt-time">10:00</div><div class="appt-date">Dem.</div></div>
+                <div class="appt-divider"></div>
+                <div class="appt-doc-avatar av-c">AM</div>
+                <div class="appt-info"><div class="appt-doc">Dr. Ahmed Maalej</div><div class="appt-spec">Pédiatrie</div></div>
+                <div class="appt-right"><span class="badge b-confirm">Confirmé</span><span class="appt-type"><i class="fa-solid fa-video"></i> Vidéo</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doctor Search -->
+          <div class="card" style="animation-delay:.3s">
+            <div class="card-header"><span class="card-title">Trouver un médecin</span><span class="card-action" onclick="showSection('doctors')">Avancée →</span></div>
+            <div class="doctor-search-card">
+              <div class="search-filter">
+                <input class="filter-input" placeholder="🔍  Nom du médecin…"/>
+                <select class="filter-input"><option>Toutes les spécialités</option><option>Cardiologie</option><option>Neurologie</option><option>Pédiatrie</option><option>Dermatologie</option><option>Gynécologie</option></select>
+              </div>
+              <div class="doc-card" onclick="openBooking()">
+                <div class="doc-av av-a">KS</div>
+                <div class="doc-details">
+                  <div class="doc-name">Dr. Karim Salah</div>
+                  <div class="doc-spec">Cardiologie</div>
+                  <div class="doc-meta"><div class="stars-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>4.9 · 12 ans exp.</div>
+                </div>
+                <span class="doc-avail">Dispo</span>
+              </div>
+              <div class="doc-card" onclick="openBooking()">
+                <div class="doc-av av-b">NB</div>
+                <div class="doc-details">
+                  <div class="doc-name">Dr. Nadia Belhaj</div>
+                  <div class="doc-spec">Neurologie</div>
+                  <div class="doc-meta"><div class="stars-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div>4.7 · 8 ans exp.</div>
+                </div>
+                <span class="doc-avail">Dispo</span>
+              </div>
+              <div class="doc-card" onclick="openBooking()">
+                <div class="doc-av av-d">FA</div>
+                <div class="doc-details">
+                  <div class="doc-name">Dr. Fatma Aziz</div>
+                  <div class="doc-spec">Gynécologie</div>
+                  <div class="doc-meta"><div class="stars-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>5.0 · 10 ans exp.</div>
+                </div>
+                <span class="doc-avail">Dispo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health + Notifications -->
+        <div class="two-col">
+          <div class="card" style="animation-delay:.35s">
+            <div class="card-header"><span class="card-title">Résumé santé</span><span class="card-action" onclick="showSection('health')">Dossier complet →</span></div>
+            <div class="health-grid" style="margin-bottom:0">
+              <div class="health-card" style="animation-delay:.4s"><div class="hc-header"><div class="hc-icon hi-red"><i class="fa-solid fa-heart-pulse"></i></div><span class="hc-label">Tension artérielle</span></div><div class="hc-value">120/80</div><div class="hc-sub">mmHg · Normale</div></div>
+              <div class="health-card" style="animation-delay:.45s"><div class="hc-header"><div class="hc-icon hi-blue"><i class="fa-solid fa-droplet"></i></div><span class="hc-label">Groupe sanguin</span></div><div class="hc-value">A+</div><div class="hc-sub">Rhésus positif</div></div>
+              <div class="health-card" style="animation-delay:.5s"><div class="hc-header"><div class="hc-icon hi-teal"><i class="fa-solid fa-weight-scale"></i></div><span class="hc-label">IMC</span></div><div class="hc-value">22.4</div><div class="hc-sub">kg/m² · Normal</div></div>
+            </div>
+          </div>
+          <div class="card" style="animation-delay:.35s">
+            <div class="card-header"><span class="card-title">Notifications récentes</span><span class="card-action" onclick="showSection('notifications')">Tout voir →</span></div>
+            <div class="notif-list">
+              <div class="notif-item unread"><div class="notif-icon ni-teal"><i class="fa-solid fa-calendar-check"></i></div><div><div class="notif-text">RDV avec Dr. Salah confirmé pour aujourd'hui à 09:30</div><div class="notif-time">Il y a 2h</div></div></div>
+              <div class="notif-item unread"><div class="notif-icon ni-amber"><i class="fa-solid fa-file-prescription"></i></div><div><div class="notif-text">Ordonnance #ORD-2024-05 expire dans 3 jours</div><div class="notif-time">Il y a 5h</div></div></div>
+              <div class="notif-item"><div class="notif-icon ni-blue"><i class="fa-solid fa-comment"></i></div><div><div class="notif-text">Nouveau message de Dr. Belhaj concernant votre consultation</div><div class="notif-time">Hier</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Section (hidden by default) -->
+      <div id="sec-chat" style="display:none">
+        <h2 style="font-family:var(--font-head);font-size:1.25rem;margin-bottom:1.5rem">Messagerie</h2>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <div style="display:flex;align-items:center;gap:.75rem">
+                <div class="appt-doc-avatar av-a">KS</div>
+                <div><div style="font-weight:600">Dr. Karim Salah</div><div style="font-size:.75rem;color:var(--success)"><i class="fa-solid fa-circle" style="font-size:.5rem"></i> En ligne</div></div>
+              </div>
+              <div style="display:flex;gap:.5rem">
+                <button class="icon-btn"><i class="fa-solid fa-phone"></i></button>
+                <button class="icon-btn"><i class="fa-solid fa-video"></i></button>
+              </div>
+            </div>
+            <div class="chat-container">
+              <div class="chat-messages" id="chatMessages">
+                <div class="msg received"><div class="msg-content">Bonjour Sana, comment vous sentez-vous depuis notre dernière consultation ?</div><div class="msg-time">09:15</div></div>
+                <div class="msg sent"><div class="msg-content">Bonjour Docteur, je me sens un peu mieux. Les médicaments ont aidé.</div><div class="msg-time">09:18</div></div>
+                <div class="msg received"><div class="msg-content">C'est une bonne nouvelle ! Continuez le traitement pendant encore 5 jours. Des questions ?</div><div class="msg-time">09:20</div></div>
+                <div class="msg sent"><div class="msg-content">Oui, est-ce que je peux reprendre le sport ?</div><div class="msg-time">09:22</div></div>
+                <div class="msg received"><div class="msg-content">Oui, progressivement. Évitez les efforts intenses les 3 premiers jours. À bientôt pour le suivi 👍</div><div class="msg-time">09:25</div></div>
+              </div>
+              <div class="chat-input-wrap">
+                <input class="chat-input" id="chatInput" placeholder="Écrire un message…" onkeydown="if(event.key==='Enter')sendMsg()"/>
+                <button class="chat-send" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Conversations</span></div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <div class="appt-item" style="cursor:pointer;border-left:3px solid var(--teal-500)"><div class="appt-doc-avatar av-a">KS</div><div class="appt-info"><div class="appt-doc">Dr. Karim Salah</div><div class="appt-spec">Oui, progressivement…</div></div><div class="appt-right"><span style="font-size:.65rem;color:var(--text-3)">09:25</span><span class="badge b-confirm" style="font-size:.6rem">En ligne</span></div></div>
+              <div class="appt-item" style="cursor:pointer"><div class="appt-doc-avatar av-b">NB</div><div class="appt-info"><div class="appt-doc">Dr. Nadia Belhaj</div><div class="appt-spec">Votre IRM est prête…</div></div><div class="appt-right"><span style="font-size:.65rem;color:var(--text-3)">Hier</span><span class="badge b-pending" style="font-size:.6rem">3</span></div></div>
+              <div class="appt-item" style="cursor:pointer"><div class="appt-doc-avatar av-c">AM</div><div class="appt-info"><div class="appt-doc">Dr. Ahmed Maalej</div><div class="appt-spec">À demain pour le RDV</div></div><div class="appt-right"><span style="font-size:.65rem;color:var(--text-3)">Lun.</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other sections placeholder -->
+      <div id="sec-other" style="display:none">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:1rem">
+          <div style="width:64px;height:64px;border-radius:var(--r-xl);background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--teal-500)"><i class="fa-solid fa-wrench"></i></div>
+          <h3 style="font-family:var(--font-head);font-size:1.2rem" id="sectionComingTitle">Section en cours</h3>
+          <p style="color:var(--text-3);font-size:.9rem;text-align:center">Cette section sera connectée au backend Spring Boot via les APIs REST.</p>
+          <button class="btn btn-primary" onclick="showSection('dashboard')"><i class="fa-solid fa-house"></i>Retour au tableau de bord</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal">
+      <div class="modal-hdr">
+        <span class="modal-title"><i class="fa-solid fa-calendar-plus" style="color:var(--teal-500);margin-right:.5rem"></i>Nouveau rendez-vous</span>
+        <button class="close-btn" onclick="closeBooking()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-form">
+        <div class="form-group"><label class="form-label">Médecin</label><select class="form-input"><option>Dr. Karim Salah — Cardiologie</option><option>Dr. Nadia Belhaj — Neurologie</option><option>Dr. Ahmed Maalej — Pédiatrie</option><option>Dr. Fatma Aziz — Gynécologie</option></select></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input"/></div>
+          <div class="form-group"><label class="form-label">Heure</label><select class="form-input"><option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option><option>11:00</option><option>14:00</option><option>14:30</option><option>15:00</option></select></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type de consultation</label>
+          <div class="type-grid">
+            <button class="type-btn active" onclick="selectType(this)"><i class="fa-solid fa-video"></i>Vidéo</button>
+            <button class="type-btn" onclick="selectType(this)"><i class="fa-solid fa-microphone"></i>Audio</button>
+            <button class="type-btn" onclick="selectType(this)"><i class="fa-solid fa-comment"></i>Chat</button>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Motif de consultation</label><textarea class="form-input" rows="2" placeholder="Décrivez brièvement votre motif…" style="resize:none"></textarea></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:.85rem" onclick="confirmBooking()"><i class="fa-solid fa-calendar-check"></i>Confirmer le rendez-vous</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sectionMap={dashboard:'sec-dashboard',chat:'sec-chat',appointments:'sec-other',doctors:'sec-other',health:'sec-other',prescriptions:'sec-other',reviews:'sec-other',notifications:'sec-other',profile:'sec-other',settings:'sec-other'};
+    const titleMap={dashboard:'Tableau de bord',chat:'Messagerie',appointments:'Mes rendez-vous',doctors:'Trouver un médecin',health:'Mon dossier santé',prescriptions:'Ordonnances',reviews:'Mes avis',notifications:'Notifications',profile:'Mon profil',settings:'Paramètres'};
+    const pathMap={dashboard:'Accueil / Dashboard',chat:'Accueil / Messagerie',appointments:'Accueil / Rendez-vous',doctors:'Accueil / Médecins',health:'Accueil / Santé',prescriptions:'Accueil / Ordonnances',reviews:'Accueil / Avis',notifications:'Accueil / Notifications',profile:'Accueil / Profil',settings:'Accueil / Paramètres'};
+    let current='dashboard';
+    function showSection(name){
+      document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el=>{if(el.textContent.trim().startsWith(titleMap[name]?.substr(0,6)||'X'))el.classList.add('active')});
+      ['sec-dashboard','sec-chat','sec-other'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none'});
+      const secId=sectionMap[name]||'sec-other';
+      const sec=document.getElementById(secId);
+      if(sec)sec.style.display='block';
+      document.getElementById('pageTitle').textContent=titleMap[name]||name;
+      document.getElementById('pagePath').textContent=pathMap[name]||name;
+      if(name!=='dashboard'&&name!=='chat'){document.getElementById('sectionComingTitle').textContent=titleMap[name]}
+      current=name;
+    }
+    function openBooking(){document.getElementById('bookingModal').classList.add('open')}
+    function closeBooking(){document.getElementById('bookingModal').classList.remove('open')}
+    function selectType(el){document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active')}
+    function confirmBooking(){closeBooking();showToast('Rendez-vous réservé avec succès !','success')}
+    function sendMsg(){
+      const inp=document.getElementById('chatInput');
+      const val=inp.value.trim();
+      if(!val)return;
+      const msgs=document.getElementById('chatMessages');
+      const now=new Date();
+      const time=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+      msgs.innerHTML+=`<div class="msg sent"><div class="msg-content">${val}</div><div class="msg-time">${time}</div></div>`;
+      inp.value='';msgs.scrollTop=msgs.scrollHeight;
+      setTimeout(()=>{msgs.innerHTML+=`<div class="msg received"><div class="msg-content">Bien reçu. Je vais consulter votre dossier.</div><div class="msg-time">${time}</div></div>`;msgs.scrollTop=msgs.scrollHeight},1200);
+    }
+    function showToast(msg,type='info'){
+      const t=document.createElement('div');
+      const icons={success:'fa-circle-check',error:'fa-circle-xmark',warning:'fa-triangle-exclamation',info:'fa-circle-info'};
+      const colors={success:'#22c55e',error:'#ef4444',warning:'#f59e0b',info:'#3b82f6'};
+      t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid ${colors[type]};border-radius:12px;padding:.85rem 1.2rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:9999;font-size:.9rem;animation:slideIn .3s var(--ease);max-width:320px`;
+      t.innerHTML=`<i class="fa-solid ${icons[type]}" style="color:${colors[type]}"></i>${msg}`;
+      document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+    }
+    document.getElementById('bookingModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeBooking()});
+  </script>
+</body>
+</html>

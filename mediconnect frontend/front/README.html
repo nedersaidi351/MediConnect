@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MediConnect — Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy:#040d1a;--s2:#111f3e;--s3:#162848;--teal:#00c9a7;--teal2:#1de9c8;--t1:#f0f4ff;--t2:#a8b8d8;--t3:#6b80a6;--bd:rgba(255,255,255,.08);--ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--info:#3b82f6;--fh:'Sora',sans-serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace}
+    *{box-sizing:border-box;margin:0;padding:0} body{font-family:var(--fb);background:var(--navy);color:var(--t1);line-height:1.7;-webkit-font-smoothing:antialiased}
+    a{color:var(--teal)} .wrap{max-width:860px;margin:0 auto;padding:3rem 2rem}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:var(--fh);font-weight:700;font-size:1.4rem;margin-bottom:2.5rem}
+    .li{width:42px;height:42px;background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--navy)}
+    .ac{color:var(--teal)} h2{font-family:var(--fh);font-size:1.4rem;font-weight:700;margin:2rem 0 1rem;color:var(--t1);display:flex;align-items:center;gap:.6rem}
+    h2 i{color:var(--teal);font-size:1.1rem}
+    p{color:var(--t2);margin-bottom:.75rem}
+    .card{background:var(--s2);border:1px solid var(--bd);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+    .page-list{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem}
+    @media(max-width:600px){.page-list{grid-template-columns:1fr}}
+    .page-item{background:var(--s3);border:1px solid var(--bd);border-radius:12px;padding:1.1rem;display:flex;flex-direction:column;gap:.35rem;transition:all .2s;text-decoration:none}
+    .page-item:hover{border-color:rgba(0,201,167,.35);transform:translateY(-2px)}
+    .page-item .name{font-family:var(--fh);font-size:.95rem;font-weight:600;color:var(--t1)}
+    .page-item .path{font-size:.75rem;font-family:var(--fm);color:var(--teal)}
+    .page-item .desc{font-size:.8rem;color:var(--t3)}
+    .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .6rem;border-radius:999px;font-size:.72rem;font-family:var(--fm)}
+    .b-ok{background:rgba(34,197,94,.1);color:var(--ok);border:1px solid rgba(34,197,94,.2)}
+    .b-info{background:rgba(59,130,246,.1);color:var(--info);border:1px solid rgba(59,130,246,.2)}
+    .b-warn{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
+    .demo-table{width:100%;border-collapse:collapse}
+    .demo-table th{padding:.6rem 1rem;text-align:left;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--bd)}
+    .demo-table td{padding:.75rem 1rem;font-size:.875rem;border-top:1px solid var(--bd);color:var(--t2);font-family:var(--fm)}
+    .demo-table td:first-child{color:var(--t1);font-weight:500;font-family:var(--fb)}
+    code{background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:.1rem .45rem;font-family:var(--fm);font-size:.82rem;color:var(--teal)}
+    .stack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+    @media(max-width:600px){.stack-grid{grid-template-columns:1fr 1fr}}
+    .stack-item{background:var(--s3);border:1px solid var(--bd);border-radius:10px;padding:.85rem;text-align:center}
+    .stack-item i{font-size:1.4rem;color:var(--teal);display:block;margin-bottom:.5rem}
+    .stack-item .sn{font-size:.85rem;font-weight:600}
+    .stack-item .sv{font-size:.72rem;color:var(--t3);font-family:var(--fm)}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;border-radius:12px;font-size:.9rem;font-weight:500;transition:all .2s;margin-right:.5rem;margin-top:.5rem}
+    .btn-p{background:var(--teal);color:var(--navy);box-shadow:0 0 16px rgba(0,201,167,.25);text-decoration:none}
+    .btn-p:hover{background:var(--teal2);transform:translateY(-1px)}
+    .btn-s{background:rgba(255,255,255,.04);border:1px solid var(--bd);color:var(--t1);text-decoration:none}
+    .btn-s:hover{border-color:rgba(0,201,167,.3)}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><div class="li"><i class="fa-solid fa-stethoscope"></i></div>Medi<span class="ac">Connect</span> <span style="font-size:.78rem;font-family:var(--fm);color:var(--t3);margin-left:.5rem">Documentation</span></div>
+
+  <div class="card" style="background:linear-gradient(135deg,var(--s2),var(--s3));border-color:rgba(0,201,167,.25)">
+    <h2 style="margin-top:0"><i class="fa-solid fa-rocket"></i>Démarrage rapide</h2>
+    <p>Ouvrez simplement <code>index.html</code> dans votre navigateur — aucun serveur requis. Toutes les pages fonctionnent en local.</p>
+    <a href="index.html" class="btn btn-p"><i class="fa-solid fa-house"></i>Ouvrir l'accueil</a>
+    <a href="pages/login.html" class="btn btn-s"><i class="fa-solid fa-right-to-bracket"></i>Page connexion</a>
+  </div>
+
+  <h2><i class="fa-solid fa-files"></i>Pages incluses</h2>
+  <div class="page-list">
+    <a href="index.html" class="page-item">
+      <div class="name"><i class="fa-solid fa-house" style="color:var(--teal);margin-right:.4rem"></i>Landing page</div>
+      <div class="path">index.html</div>
+      <div class="desc">Page d'accueil avec hero animé, fonctionnalités, médecins, footer</div>
+    </a>
+    <a href="pages/login.html" class="page-item">
+      <div class="name"><i class="fa-solid fa-right-to-bracket" style="color:#3b82f6;margin-right:.4rem"></i>Connexion</div>
+      <div class="path">pages/login.html</div>
+      <div class="desc">Split-panel, démo rapide, toggle mot de passe, redirection par rôle</div>
+    </a>
+    <a href="pages/register.html" class="page-item">
+      <div class="name"><i class="fa-solid fa-user-plus" style="color:#8b5cf6;margin-right:.4rem"></i>Inscription</div>
+      <div class="path">pages/register.html</div>
+      <div class="desc">4 étapes : rôle → identité → compte → confirmation</div>
+    </a>
+    <a href="pages/patient-dashboard.html" class="page-item">
+      <div class="name"><i class="fa-solid fa-user" style="color:var(--teal);margin-right:.4rem"></i>Espace Patient</div>
+      <div class="path">pages/patient-dashboard.html</div>
+      <div class="desc">Sidebar, stats, RDV, recherche médecin, chat, dossier santé</div>
+    </a>
+    <a href="pages/doctor-dashboard.html" class="page-item">
+      <div class="name"><i class="fa-solid fa-user-doctor" style="color:#3b82f6;margin-right:.4rem"></i>Espace Médecin</div>
+      <div class="path">pages/doctor-dashboard.html</div>
+      <div class="desc">Agenda, graphique, patients, validation RDV, modal consultation</div>
+    </a>
+    <a href="pages/admin-dashboard.html" class="page-item">
+      <div class="name"><i class="fa-solid fa-shield-halved" style="color:#8b5cf6;margin-right:.4rem"></i>Administration</div>
+      <div class="path">pages/admin-dashboard.html</div>
+      <div class="desc">KPIs, validation médecins, analytics, paramètres, users</div>
+    </a>
+  </div>
+
+  <h2><i class="fa-solid fa-key"></i>Comptes de démonstration</h2>
+  <div class="card">
+    <table class="demo-table">
+      <thead><tr><th>Rôle</th><th>Email</th><th>Mot de passe</th><th>Redirection</th></tr></thead>
+      <tbody>
+        <tr><td>Patient</td><td>patient@demo.com</td><td>Demo1234!</td><td>patient-dashboard.html</td></tr>
+        <tr><td>Médecin</td><td>doctor@demo.com</td><td>Demo1234!</td><td>doctor-dashboard.html</td></tr>
+        <tr><td>Admin</td><td>admin@demo.com</td><td>Admin1234!</td><td>admin-dashboard.html</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:.85rem;font-size:.82rem;color:var(--t3)">💡 Utilisez les boutons de démo rapide sur la page de connexion pour remplir automatiquement.</p>
+  </div>
+
+  <h2><i class="fa-solid fa-palette"></i>Design System</h2>
+  <div class="card">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:.5rem"><div style="width:28px;height:28px;border-radius:6px;background:#040d1a;border:1px solid rgba(255,255,255,.2)"></div><span style="font-size:.8rem;font-family:var(--fm)">#040d1a Navy</span></div>
+      <div style="display:flex;align-items:center;gap:.5rem"><div style="width:28px;height:28px;border-radius:6px;background:#00c9a7"></div><span style="font-size:.8rem;font-family:var(--fm)">#00c9a7 Teal</span></div>
+      <div style="display:flex;align-items:center;gap:.5rem"><div style="width:28px;height:28px;border-radius:6px;background:#111f3e;border:1px solid rgba(255,255,255,.1)"></div><span style="font-size:.8rem;font-family:var(--fm)">#111f3e Surface</span></div>
+      <div style="display:flex;align-items:center;gap:.5rem"><div style="width:28px;height:28px;border-radius:6px;background:#3b82f6"></div><span style="font-size:.8rem;font-family:var(--fm)">#3b82f6 Blue</span></div>
+      <div style="display:flex;align-items:center;gap:.5rem"><div style="width:28px;height:28px;border-radius:6px;background:#8b5cf6"></div><span style="font-size:.8rem;font-family:var(--fm)">#8b5cf6 Purple</span></div>
+    </div>
+    <p style="font-size:.82rem;color:var(--t3)"><strong style="color:var(--t2)">Polices :</strong> Sora (titres) · DM Sans (corps) · JetBrains Mono (données)<br/><strong style="color:var(--t2)">CDNs :</strong> Google Fonts + Font Awesome 6.5 — tout en ligne, aucune dépendance locale</p>
+  </div>
+
+  <h2><i class="fa-solid fa-code-branch"></i>Connexion backend Spring Boot</h2>
+  <div class="card">
+    <p>Ce frontend HTML/CSS/JS est conçu pour être connecté au backend Spring Boot (port <code>8080</code>). Chaque page contient les endpoints commentés :</p>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem">
+      <li style="font-size:.875rem;color:var(--t2)"><code>POST /api/auth/login</code> → Authentification JWT</li>
+      <li style="font-size:.875rem;color:var(--t2)"><code>GET /api/appointments/me</code> → Rendez-vous patient</li>
+      <li style="font-size:.875rem;color:var(--t2)"><code>GET /api/doctors</code> → Recherche médecins</li>
+      <li style="font-size:.875rem;color:var(--t2)"><code>GET /api/admin/stats</code> → Statistiques admin</li>
+      <li style="font-size:.875rem;color:var(--t2)"><code>WS /ws</code> → Chat temps réel STOMP/SockJS</li>
+    </ul>
+    <p style="margin-top:.85rem;font-size:.82rem;color:var(--t3)">Pour la version Angular 17 complète avec HttpClient, intercepteurs JWT et WebSocket → voir le projet <strong style="color:var(--t2)">mediconnect-angular.zip</strong></p>
+  </div>
+
+  <h2><i class="fa-solid fa-graduation-cap"></i>Informations PFE</h2>
+  <div class="card">
+    <p><strong style="color:var(--t1)">Projet :</strong> MediConnect — Plateforme de consultation médicale en ligne</p>
+    <p><strong style="color:var(--t1)">Réalisé par :</strong> Nader Saidi</p>
+    <p><strong style="color:var(--t1)">Année :</strong> 2024/2025</p>
+    <p><strong style="color:var(--t1)">Stack :</strong> Spring Boot 3.2 + PostgreSQL + Angular 17 / HTML5 + CSS3 + JavaScript</p>
+  </div>
+</div>
+</body>
+</html>

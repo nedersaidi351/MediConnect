@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MediConnect — Administration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy-950:#040d1a;--navy-900:#071428;--surface-1:#0d1b35;--surface-2:#111f3e;--surface-3:#162848;--surface-4:#1d3260;--teal-500:#00c9a7;--teal-400:#1de9c8;--text-1:#f0f4ff;--text-2:#a8b8d8;--text-3:#6b80a6;--border:rgba(255,255,255,0.08);--border-2:rgba(0,201,167,0.25);--glass:rgba(255,255,255,0.04);--success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;--purple:#8b5cf6;--font-head:'Sora',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;--r-md:12px;--r-lg:16px;--r-xl:24px;--sidebar:260px;--ease:cubic-bezier(0.4,0,0.2,1)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--navy-950);color:var(--text-1);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none} button{cursor:pointer;border:none;background:none;font:inherit}
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--navy-900)} ::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:3px}
+
+    .sidebar{width:var(--sidebar);background:var(--surface-1);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100;overflow:hidden}
+    .sidebar-brand{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;font-family:var(--font-head);font-weight:700;font-size:1.15rem}
+    .brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--teal-500),var(--teal-400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--navy-950)}
+    .accent{color:var(--teal-500)}
+    .admin-badge{font-size:.65rem;font-family:var(--font-mono);padding:.15rem .5rem;border-radius:999px;background:rgba(139,92,246,.15);color:var(--purple);border:1px solid rgba(139,92,246,.25);margin-left:.25rem}
+    .sidebar-user{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+    .su-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
+    .su-name{font-size:.875rem;font-weight:600} .su-role{font-size:.72rem;color:var(--purple);font-family:var(--font-mono)}
+    .sidebar-nav{flex:1;padding:1rem .75rem;display:flex;flex-direction:column;gap:.2rem;overflow-y:auto}
+    .nav-section-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);padding:.75rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:var(--r-md);font-size:.875rem;color:var(--text-2);transition:all .2s;cursor:pointer}
+    .nav-item i{width:18px;text-align:center;font-size:.85rem}
+    .nav-item:hover{background:var(--glass);color:var(--text-1)}
+    .nav-item.active{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.15)}
+    .nav-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.62rem;font-family:var(--font-mono);padding:.08rem .4rem;border-radius:999px}
+    .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+    .btn-logout{display:flex;align-items:center;gap:.6rem;color:var(--text-3);font-size:.875rem;transition:color .2s;padding:.5rem .25rem}
+    .btn-logout:hover{color:var(--danger)}
+
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+    .topbar{background:var(--surface-1);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .page-title{font-family:var(--font-head);font-size:1.1rem;font-weight:600}
+    .topbar-right{display:flex;align-items:center;gap:.75rem}
+    .icon-btn{width:36px;height:36px;border-radius:var(--r-md);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.875rem;color:var(--text-2);transition:all .2s;position:relative}
+    .icon-btn:hover{border-color:rgba(139,92,246,.4);color:var(--purple)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:2px solid var(--surface-1)}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;border-radius:var(--r-md);font-size:.875rem;font-weight:500;transition:all .2s;white-space:nowrap;font-family:var(--font-body)}
+    .btn-primary{background:var(--teal-500);color:var(--navy-950)} .btn-primary:hover{background:var(--teal-400);transform:translateY(-1px)}
+    .btn-secondary{background:var(--glass);border:1px solid var(--border);color:var(--text-1)} .btn-secondary:hover{border-color:var(--border-2)}
+    .btn-success{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.2)} .btn-success:hover{background:rgba(34,197,94,.25)}
+    .btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.2)} .btn-danger:hover{background:rgba(239,68,68,.25)}
+    .btn-sm{padding:.35rem .75rem;font-size:.78rem}
+
+    .content{padding:2rem;flex:1}
+
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.75rem}
+    @media(max-width:1400px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+    .stat-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.25rem;transition:all .25s;animation:fadeUp .4s var(--ease) both;position:relative;overflow:hidden}
+    .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .25s}
+    .stat-card:hover::after{opacity:1}
+    .stat-card:hover{border-color:var(--border-2);transform:translateY(-2px)}
+    .sc-teal::after{background:var(--teal-500)} .sc-blue::after{background:#3b82f6} .sc-purple::after{background:#8b5cf6}
+    .sc-green::after{background:#22c55e} .sc-amber::after{background:#f59e0b} .sc-red::after{background:#ef4444}
+    .stat-icon-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+    .stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+    .si-teal{background:rgba(0,201,167,.12);color:var(--teal-500)} .si-blue{background:rgba(59,130,246,.12);color:#3b82f6} .si-purple{background:rgba(139,92,246,.12);color:#8b5cf6}
+    .si-green{background:rgba(34,197,94,.12);color:#22c55e} .si-amber{background:rgba(245,158,11,.12);color:#f59e0b} .si-red{background:rgba(239,68,68,.12);color:#ef4444}
+    .stat-val{font-family:var(--font-head);font-size:1.8rem;font-weight:700;line-height:1}
+    .stat-lbl{font-size:.75rem;color:var(--text-3);margin-top:.2rem}
+    .stat-delta{font-size:.72rem;font-family:var(--font-mono);color:var(--success);margin-top:.15rem}
+
+    /* Two col */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:1100px){.two-col{grid-template-columns:1fr}}
+    .card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;animation:fadeUp .4s var(--ease) both}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+    .card-title{font-family:var(--font-head);font-size:1rem;font-weight:600}
+    .badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:999px;font-size:.7rem;font-family:var(--font-mono)}
+    .b-verify{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+    .b-active{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+    .b-suspend{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+    .b-patient{background:rgba(0,201,167,.1);color:var(--teal-500);border:1px solid rgba(0,201,167,.2)}
+    .b-doctor{background:rgba(59,130,246,.1);color:#3b82f6;border:1px solid rgba(59,130,246,.2)}
+    .b-admin{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.2)}
+
+    /* Table */
+    .table-wrap{overflow-x:auto;border-radius:var(--r-lg);border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse}
+    thead{background:var(--surface-3)}
+    th{padding:.7rem 1rem;text-align:left;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3)}
+    td{padding:.8rem 1rem;font-size:.85rem;border-top:1px solid var(--border);color:var(--text-2)}
+    tbody tr{transition:background .15s} tbody tr:hover{background:rgba(255,255,255,.02)}
+    .user-cell{display:flex;align-items:center;gap:.6rem}
+    .u-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+    .ua{background:rgba(0,201,167,.15);color:var(--teal-500)} .ub{background:rgba(59,130,246,.15);color:#3b82f6} .uc{background:rgba(139,92,246,.15);color:var(--purple)} .ud{background:rgba(245,158,11,.15);color:#f59e0b} .ue{background:rgba(239,68,68,.15);color:#ef4444}
+    .u-name{font-size:.85rem;font-weight:500;color:var(--text-1)} .u-email{font-size:.7rem;color:var(--text-3)}
+
+    /* Pending verification card */
+    .pending-item{display:flex;align-items:center;gap:.75rem;padding:.85rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid rgba(245,158,11,.2);margin-bottom:.6rem;transition:all .2s}
+    .pending-item:hover{border-color:rgba(245,158,11,.35)}
+    .p-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;border:2px solid rgba(245,158,11,.3);flex-shrink:0}
+    .pa{background:rgba(59,130,246,.1);color:#3b82f6} .pb{background:rgba(139,92,246,.1);color:var(--purple)} .pc{background:rgba(0,201,167,.1);color:var(--teal-500)}
+    .p-info{flex:1} .p-name{font-size:.9rem;font-weight:600} .p-detail{font-size:.72rem;color:var(--text-3);margin-top:.15rem}
+    .p-actions{display:flex;gap:.4rem}
+
+    /* Activity feed */
+    .activity-list{display:flex;flex-direction:column;gap:.5rem}
+    .activity-item{display:flex;gap:.75rem;padding:.65rem;border-radius:var(--r-md);background:var(--surface-3);border:1px solid var(--border);font-size:.82rem}
+    .activity-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+    .ai-teal{background:rgba(0,201,167,.12);color:var(--teal-500)} .ai-blue{background:rgba(59,130,246,.12);color:#3b82f6}
+    .ai-green{background:rgba(34,197,94,.12);color:#22c55e} .ai-amber{background:rgba(245,158,11,.12);color:#f59e0b}
+    .ai-red{background:rgba(239,68,68,.12);color:#ef4444}
+    .activity-text{flex:1;color:var(--text-1);line-height:1.4}
+    .activity-time{font-size:.68rem;color:var(--text-3);font-family:var(--font-mono);flex-shrink:0}
+
+    /* Chart bars (horizontal) */
+    .h-chart{display:flex;flex-direction:column;gap:.6rem}
+    .h-bar-row{display:flex;align-items:center;gap:.75rem;font-size:.8rem}
+    .h-bar-label{min-width:120px;color:var(--text-2);text-align:right}
+    .h-bar-track{flex:1;height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden}
+    .h-bar-fill{height:100%;border-radius:4px;transition:width 1s var(--ease)}
+    .h-bar-val{min-width:32px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-3)}
+
+    /* Toggle switch */
+    .toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:var(--surface-4);border-radius:10px;transition:.25s;cursor:pointer;border:1px solid var(--border)}
+    .toggle-slider::before{content:'';position:absolute;height:14px;width:14px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.25s}
+    .toggle input:checked + .toggle-slider{background:var(--teal-500);border-color:var(--teal-500)}
+    .toggle input:checked + .toggle-slider::before{transform:translateX(16px)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-icon"><i class="fa-solid fa-stethoscope"></i></div>Medi<span class="accent">Connect</span><span class="admin-badge">ADMIN</span></div>
+    <div class="sidebar-user">
+      <div class="su-avatar">AD</div>
+      <div><div class="su-name">Administrateur</div><div class="su-role">Super Admin</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Vue d'ensemble</div>
+      <div class="nav-item active"><i class="fa-solid fa-chart-pie"></i>Tableau de bord</div>
+      <div class="nav-item"><i class="fa-solid fa-chart-line"></i>Analytics</div>
+      <div class="nav-section-label">Gestion</div>
+      <div class="nav-item"><i class="fa-solid fa-users"></i>Utilisateurs</div>
+      <div class="nav-item"><i class="fa-solid fa-user-doctor"></i>Médecins<span class="nav-badge">4</span></div>
+      <div class="nav-item"><i class="fa-solid fa-calendar-check"></i>Rendez-vous</div>
+      <div class="nav-item"><i class="fa-solid fa-comments"></i>Messages</div>
+      <div class="nav-section-label">Validation</div>
+      <div class="nav-item"><i class="fa-solid fa-clock"></i>En attente<span class="nav-badge">4</span></div>
+      <div class="nav-item"><i class="fa-solid fa-star"></i>Avis & notes</div>
+      <div class="nav-section-label">Système</div>
+      <div class="nav-item"><i class="fa-solid fa-bell"></i>Notifications<span class="nav-badge">7</span></div>
+      <div class="nav-item"><i class="fa-solid fa-screwdriver-wrench"></i>Paramètres</div>
+      <div class="nav-item"><i class="fa-solid fa-shield-halved"></i>Sécurité</div>
+      <div class="nav-item"><i class="fa-solid fa-database"></i>Logs système</div>
+    </nav>
+    <div class="sidebar-footer"><a href="login.html" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i>Déconnexion</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="page-title">Administration — Vue d'ensemble</div>
+        <div style="font-size:.72rem;color:var(--text-3);font-family:var(--font-mono)">Dernière mise à jour: 07/04/2025 à 09:42</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="toast('Rapport généré')"><i class="fa-solid fa-file-export"></i>Exporter rapport</button>
+        <button class="icon-btn"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="su-avatar" style="cursor:pointer;width:34px;height:34px;font-size:.8rem">AD</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card sc-teal" style="animation-delay:.05s"><div class="stat-icon-wrap"><div class="stat-icon si-teal"><i class="fa-solid fa-users"></i></div><span style="font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)">↑ +12%</span></div><div class="stat-val">2 841</div><div class="stat-lbl">Utilisateurs totaux</div></div>
+        <div class="stat-card sc-blue" style="animation-delay:.08s"><div class="stat-icon-wrap"><div class="stat-icon si-blue"><i class="fa-solid fa-user-doctor"></i></div><span style="font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)">↑ +5</span></div><div class="stat-val">156</div><div class="stat-lbl">Médecins actifs</div></div>
+        <div class="stat-card sc-green" style="animation-delay:.11s"><div class="stat-icon-wrap"><div class="stat-icon si-green"><i class="fa-solid fa-calendar-check"></i></div><span style="font-size:.65rem;color:var(--success);font-family:var(--font-mono)">↑ +24%</span></div><div class="stat-val">8 420</div><div class="stat-lbl">Consultations</div></div>
+        <div class="stat-card sc-purple" style="animation-delay:.14s"><div class="stat-icon-wrap"><div class="stat-icon si-purple"><i class="fa-solid fa-clock"></i></div><span style="font-size:.65rem;color:var(--warning);font-family:var(--font-mono)">⚠ Action</span></div><div class="stat-val">4</div><div class="stat-lbl">En attente validation</div></div>
+        <div class="stat-card sc-amber" style="animation-delay:.17s"><div class="stat-icon-wrap"><div class="stat-icon si-amber"><i class="fa-solid fa-star"></i></div><span style="font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)">stable</span></div><div class="stat-val">4.7</div><div class="stat-lbl">Note plateforme</div></div>
+        <div class="stat-card sc-red" style="animation-delay:.2s"><div class="stat-icon-wrap"><div class="stat-icon si-red"><i class="fa-solid fa-circle-exclamation"></i></div><span style="font-size:.65rem;color:var(--success);font-family:var(--font-mono)">↓ -3</span></div><div class="stat-val">2</div><div class="stat-lbl">Signalements ouverts</div></div>
+      </div>
+
+      <!-- Pending verifications + Activity -->
+      <div class="two-col">
+        <div class="card" style="animation-delay:.25s">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-clock" style="color:var(--warning);margin-right:.4rem"></i>Médecins en attente de validation</span>
+            <span class="badge b-verify">4 demandes</span>
+          </div>
+          <div class="pending-item">
+            <div class="p-av pa">KS</div>
+            <div class="p-info"><div class="p-name">Dr. Karim Salah</div><div class="p-detail">Cardiologie · Licence: CRD-2025-0041 · 12 ans exp.</div></div>
+            <div class="p-actions">
+              <button class="btn btn-success btn-sm" onclick="verifyDoc(this)"><i class="fa-solid fa-check"></i>Valider</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectDoc(this)"><i class="fa-solid fa-times"></i></button>
+            </div>
+          </div>
+          <div class="pending-item">
+            <div class="p-av pb">NB</div>
+            <div class="p-info"><div class="p-name">Dr. Nadia Belhaj</div><div class="p-detail">Neurologie · Licence: NEU-2025-0087 · 8 ans exp.</div></div>
+            <div class="p-actions">
+              <button class="btn btn-success btn-sm" onclick="verifyDoc(this)"><i class="fa-solid fa-check"></i>Valider</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectDoc(this)"><i class="fa-solid fa-times"></i></button>
+            </div>
+          </div>
+          <div class="pending-item">
+            <div class="p-av pc">FA</div>
+            <div class="p-info"><div class="p-name">Dr. Fatma Aziz</div><div class="p-detail">Gynécologie · Licence: GYN-2025-0022 · 10 ans exp.</div></div>
+            <div class="p-actions">
+              <button class="btn btn-success btn-sm" onclick="verifyDoc(this)"><i class="fa-solid fa-check"></i>Valider</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectDoc(this)"><i class="fa-solid fa-times"></i></button>
+            </div>
+          </div>
+          <div class="pending-item">
+            <div class="p-av pa" style="background:rgba(245,158,11,.1);color:#f59e0b">AM</div>
+            <div class="p-info"><div class="p-name">Dr. Ahmed Maalej</div><div class="p-detail">Pédiatrie · Licence: PED-2025-0056 · 15 ans exp.</div></div>
+            <div class="p-actions">
+              <button class="btn btn-success btn-sm" onclick="verifyDoc(this)"><i class="fa-solid fa-check"></i>Valider</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectDoc(this)"><i class="fa-solid fa-times"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity feed -->
+        <div class="card" style="animation-delay:.3s">
+          <div class="card-header"><span class="card-title">Activité récente</span><span class="card-action" style="font-size:.8rem;color:var(--teal-500);cursor:pointer">Tout voir →</span></div>
+          <div class="activity-list">
+            <div class="activity-item"><div class="activity-icon ai-teal"><i class="fa-solid fa-user-plus"></i></div><div class="activity-text"><strong>Nouvel utilisateur</strong> — Sana Amara s'est inscrite</div><div class="activity-time">09:41</div></div>
+            <div class="activity-item"><div class="activity-icon ai-green"><i class="fa-solid fa-calendar-check"></i></div><div class="activity-text"><strong>RDV confirmé</strong> — Dr. Salah / Amara · 09:30</div><div class="activity-time">09:32</div></div>
+            <div class="activity-item"><div class="activity-icon ai-blue"><i class="fa-solid fa-user-doctor"></i></div><div class="activity-text"><strong>Demande validation</strong> — Dr. Fatma Aziz</div><div class="activity-time">08:55</div></div>
+            <div class="activity-item"><div class="activity-icon ai-amber"><i class="fa-solid fa-star"></i></div><div class="activity-text"><strong>Nouvel avis</strong> — 5 étoiles pour Dr. Maalej</div><div class="activity-time">08:30</div></div>
+            <div class="activity-item"><div class="activity-icon ai-red"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="activity-text"><strong>Signalement</strong> — Avis inapproprié signalé</div><div class="activity-time">08:15</div></div>
+            <div class="activity-item"><div class="activity-icon ai-teal"><i class="fa-solid fa-comment"></i></div><div class="activity-text"><strong>Consultation terminée</strong> — Dr. Belhaj / Mansour</div><div class="activity-time">Hier</div></div>
+            <div class="activity-item"><div class="activity-icon ai-green"><i class="fa-solid fa-check-circle"></i></div><div class="activity-text"><strong>Médecin validé</strong> — Dr. Ben Ali activé</div><div class="activity-time">Hier</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specialty chart + Settings -->
+      <div class="two-col">
+        <div class="card" style="animation-delay:.35s">
+          <div class="card-header"><span class="card-title">Consultations par spécialité</span></div>
+          <div class="h-chart">
+            <div class="h-bar-row"><span class="h-bar-label">Médecine générale</span><div class="h-bar-track"><div class="h-bar-fill" style="width:85%;background:var(--teal-500)"></div></div><span class="h-bar-val">2 840</span></div>
+            <div class="h-bar-row"><span class="h-bar-label">Cardiologie</span><div class="h-bar-track"><div class="h-bar-fill" style="width:65%;background:#3b82f6"></div></div><span class="h-bar-val">1 820</span></div>
+            <div class="h-bar-row"><span class="h-bar-label">Pédiatrie</span><div class="h-bar-track"><div class="h-bar-fill" style="width:55%;background:#8b5cf6"></div></div><span class="h-bar-val">1 440</span></div>
+            <div class="h-bar-row"><span class="h-bar-label">Gynécologie</span><div class="h-bar-track"><div class="h-bar-fill" style="width:45%;background:#f59e0b"></div></div><span class="h-bar-val">1 120</span></div>
+            <div class="h-bar-row"><span class="h-bar-label">Neurologie</span><div class="h-bar-track"><div class="h-bar-fill" style="width:38%;background:#ef4444"></div></div><span class="h-bar-val">890</span></div>
+            <div class="h-bar-row"><span class="h-bar-label">Dermatologie</span><div class="h-bar-track"><div class="h-bar-fill" style="width:30%;background:#22c55e"></div></div><span class="h-bar-val">680</span></div>
+            <div class="h-bar-row"><span class="h-bar-label">Autres</span><div class="h-bar-track"><div class="h-bar-fill" style="width:20%;background:var(--text-3)"></div></div><span class="h-bar-val">430</span></div>
+          </div>
+        </div>
+
+        <!-- Platform settings toggles -->
+        <div class="card" style="animation-delay:.4s">
+          <div class="card-header"><span class="card-title">Paramètres plateforme</span></div>
+          <div style="display:flex;flex-direction:column;gap:1rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid var(--border)">
+              <div><div style="font-size:.875rem;font-weight:500">Inscriptions ouvertes</div><div style="font-size:.75rem;color:var(--text-3)">Permettre de nouveaux comptes</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid var(--border)">
+              <div><div style="font-size:.875rem;font-weight:500">Mode maintenance</div><div style="font-size:.75rem;color:var(--text-3)">Suspension temporaire du service</div></div>
+              <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid var(--border)">
+              <div><div style="font-size:.875rem;font-weight:500">Chatbot activé</div><div style="font-size:.75rem;color:var(--text-3)">Intégration Dialogflow</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid var(--border)">
+              <div><div style="font-size:.875rem;font-weight:500">Emails automatiques</div><div style="font-size:.75rem;color:var(--text-3)">Rappels & confirmations</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid var(--border)">
+              <div><div style="font-size:.875rem;font-weight:500">Validation manuelle médecins</div><div style="font-size:.75rem;color:var(--text-3)">Vérification avant activation</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users table -->
+      <div class="card" style="animation-delay:.45s;margin-top:0">
+        <div class="card-header">
+          <span class="card-title">Gestion des utilisateurs</span>
+          <div style="display:flex;gap:.5rem">
+            <input style="background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.45rem .85rem;color:var(--text-1);font-size:.82rem;outline:none;font-family:var(--font-body);width:200px" placeholder="🔍 Rechercher…"/>
+            <select style="background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.45rem .85rem;color:var(--text-2);font-size:.82rem;outline:none;font-family:var(--font-body)"><option>Tous les rôles</option><option>Patient</option><option>Médecin</option><option>Secrétaire</option><option>Admin</option></select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Statut</th><th>Inscrit le</th><th>Dernière connexion</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div class="user-cell"><div class="u-av ua">SA</div><div><div class="u-name">Sana Amara</div><div class="u-email">sana@email.com</div></div></div></td><td><span class="badge b-patient">Patient</span></td><td><span class="badge b-active">Actif</span></td><td style="font-family:var(--font-mono);font-size:.78rem">01/03/2025</td><td style="font-family:var(--font-mono);font-size:.78rem">Aujourd'hui</td><td><div style="display:flex;gap:.4rem"><button class="btn btn-secondary btn-sm">Voir</button><button class="btn btn-danger btn-sm" onclick="toast('Compte suspendu','error')">Suspendre</button></div></td></tr>
+              <tr><td><div class="user-cell"><div class="u-av ub">KS</div><div><div class="u-name">Dr. Karim Salah</div><div class="u-email">ksalah@email.com</div></div></div></td><td><span class="badge b-doctor">Médecin</span></td><td><span class="badge b-verify">En attente</span></td><td style="font-family:var(--font-mono);font-size:.78rem">15/03/2025</td><td style="font-family:var(--font-mono);font-size:.78rem">Hier</td><td><div style="display:flex;gap:.4rem"><button class="btn btn-success btn-sm" onclick="toast('Médecin validé')">Valider</button><button class="btn btn-danger btn-sm" onclick="toast('Refusé','error')">Refuser</button></div></td></tr>
+              <tr><td><div class="user-cell"><div class="u-av uc">NB</div><div><div class="u-name">Dr. Nadia Belhaj</div><div class="u-email">nbelhaj@email.com</div></div></div></td><td><span class="badge b-doctor">Médecin</span></td><td><span class="badge b-active">Actif</span></td><td style="font-family:var(--font-mono);font-size:.78rem">10/02/2025</td><td style="font-family:var(--font-mono);font-size:.78rem">Aujourd'hui</td><td><div style="display:flex;gap:.4rem"><button class="btn btn-secondary btn-sm">Voir</button><button class="btn btn-danger btn-sm" onclick="toast('Compte suspendu','error')">Suspendre</button></div></td></tr>
+              <tr><td><div class="user-cell"><div class="u-av ud">KM</div><div><div class="u-name">Karim Mansour</div><div class="u-email">kmansour@email.com</div></div></div></td><td><span class="badge b-patient">Patient</span></td><td><span class="badge b-active">Actif</span></td><td style="font-family:var(--font-mono);font-size:.78rem">20/03/2025</td><td style="font-family:var(--font-mono);font-size:.78rem">Il y a 2j</td><td><div style="display:flex;gap:.4rem"><button class="btn btn-secondary btn-sm">Voir</button><button class="btn btn-danger btn-sm" onclick="toast('Compte suspendu','error')">Suspendre</button></div></td></tr>
+              <tr><td><div class="user-cell"><div class="u-av ue">AD</div><div><div class="u-name">Administrateur</div><div class="u-email">admin@mediconnect.com</div></div></div></td><td><span class="badge b-admin">Admin</span></td><td><span class="badge b-active">Actif</span></td><td style="font-family:var(--font-mono);font-size:.78rem">01/01/2025</td><td style="font-family:var(--font-mono);font-size:.78rem">Aujourd'hui</td><td><div style="display:flex;gap:.4rem"><button class="btn btn-secondary btn-sm">Voir</button><span style="font-size:.75rem;color:var(--text-3)">Protégé</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function verifyDoc(btn){const row=btn.closest('.pending-item');row.style.opacity='.5';row.style.pointerEvents='none';toast('Médecin validé avec succès ✓')}
+    function rejectDoc(btn){const row=btn.closest('.pending-item');row.style.opacity='.5';row.style.pointerEvents='none';toast('Demande refusée','error')}
+    function toast(msg,type='success'){
+      const t=document.createElement('div');
+      const c={success:'#22c55e',error:'#ef4444',info:'#3b82f6'};
+      const ic={success:'fa-circle-check',error:'fa-circle-xmark',info:'fa-circle-info'};
+      t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid ${c[type]||c.success};border-radius:12px;padding:.85rem 1.2rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:9999;font-size:.875rem;color:var(--text-1);max-width:320px`;
+      t.innerHTML=`<i class="fa-solid ${ic[type]}" style="color:${c[type]}"></i>${msg}`;
+      document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+    }
+  </script>
+</body>
+</html>

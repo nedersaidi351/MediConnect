@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MediConnect — Espace Médecin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy-950:#040d1a;--navy-900:#071428;--navy-800:#0c1f3f;--surface-1:#0d1b35;--surface-2:#111f3e;--surface-3:#162848;--surface-4:#1d3260;--teal-500:#00c9a7;--teal-400:#1de9c8;--text-1:#f0f4ff;--text-2:#a8b8d8;--text-3:#6b80a6;--border:rgba(255,255,255,0.08);--border-2:rgba(0,201,167,0.25);--glass:rgba(255,255,255,0.04);--success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;--font-head:'Sora',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;--r-md:12px;--r-lg:16px;--r-xl:24px;--sidebar:260px;--ease:cubic-bezier(0.4,0,0.2,1)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--navy-950);color:var(--text-1);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none} button{cursor:pointer;border:none;background:none;font:inherit}
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--navy-900)} ::-webkit-scrollbar-thumb{background:var(--surface-4);border-radius:3px}
+
+    .sidebar{width:var(--sidebar);background:var(--surface-1);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100}
+    .sidebar-brand{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;font-family:var(--font-head);font-weight:700;font-size:1.15rem}
+    .brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--teal-500),var(--teal-400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--navy-950)}
+    .accent{color:var(--teal-500)}
+    .sidebar-user{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+    .su-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--info),#6366f1);border:2px solid rgba(59,130,246,.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
+    .su-name{font-size:.875rem;font-weight:600} .su-role{font-size:.72rem;color:var(--info);font-family:var(--font-mono)}
+    .sidebar-nav{flex:1;padding:1rem .75rem;display:flex;flex-direction:column;gap:.25rem;overflow-y:auto}
+    .nav-section-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);padding:.75rem .5rem .35rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:var(--r-md);font-size:.875rem;color:var(--text-2);transition:all .2s;cursor:pointer}
+    .nav-item i{width:18px;text-align:center;font-size:.9rem}
+    .nav-item:hover{background:var(--glass);color:var(--text-1)}
+    .nav-item.active{background:rgba(59,130,246,.1);color:var(--info);border:1px solid rgba(59,130,246,.15)}
+    .nav-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;font-family:var(--font-mono);padding:.1rem .45rem;border-radius:999px}
+    .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+    .btn-logout{display:flex;align-items:center;gap:.6rem;color:var(--text-3);font-size:.875rem;transition:color .2s;padding:.5rem .25rem}
+    .btn-logout:hover{color:var(--danger)}
+
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+    .topbar{background:var(--surface-1);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .page-title{font-family:var(--font-head);font-size:1.1rem;font-weight:600}
+    .topbar-right{display:flex;align-items:center;gap:.75rem}
+    .live-badge{display:flex;align-items:center;gap:.4rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:999px;padding:.25rem .75rem;font-size:.75rem;color:var(--danger);font-family:var(--font-mono)}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--danger);animation:pulse 1.5s infinite}
+    .icon-btn{width:36px;height:36px;border-radius:var(--r-md);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.875rem;color:var(--text-2);transition:all .2s;position:relative}
+    .icon-btn:hover{border-color:var(--border-2);color:var(--info)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:2px solid var(--surface-1)}
+
+    .content{padding:2rem;flex:1}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;border-radius:var(--r-md);font-size:.875rem;font-weight:500;transition:all .2s;white-space:nowrap;font-family:var(--font-body)}
+    .btn-primary{background:var(--teal-500);color:var(--navy-950);box-shadow:0 0 18px rgba(0,201,167,.25)}
+    .btn-primary:hover{background:var(--teal-400);transform:translateY(-1px)}
+    .btn-secondary{background:var(--glass);border:1px solid var(--border);color:var(--text-1)}
+    .btn-secondary:hover{border-color:var(--border-2)}
+    .btn-success{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.2)}
+    .btn-success:hover{background:rgba(34,197,94,.25)}
+    .btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
+    .btn-danger:hover{background:rgba(239,68,68,.25)}
+    .btn-sm{padding:.35rem .75rem;font-size:.78rem;border-radius:var(--r-md)}
+
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1.75rem}
+    @media(max-width:1200px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+    .stat-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.25rem;display:flex;align-items:center;gap:.85rem;transition:all .25s;animation:fadeUp .4s var(--ease) both}
+    .stat-card:hover{border-color:var(--border-2);transform:translateY(-2px)}
+    .stat-icon{width:44px;height:44px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .si-teal{background:rgba(0,201,167,.12);color:var(--teal-500);border:1px solid rgba(0,201,167,.2)}
+    .si-blue{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.2)}
+    .si-purple{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.2)}
+    .si-amber{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+    .si-green{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+    .stat-info .val{font-family:var(--font-head);font-size:1.5rem;font-weight:700;line-height:1}
+    .stat-info .lbl{font-size:.72rem;color:var(--text-3);margin-top:.2rem}
+
+    /* Three-col */
+    .three-col{display:grid;grid-template-columns:1fr 1fr 320px;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:1300px){.three-col{grid-template-columns:1fr 320px}}
+    .card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;animation:fadeUp .4s var(--ease) both}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+    .card-title{font-family:var(--font-head);font-size:1rem;font-weight:600}
+    .card-action{font-size:.8rem;color:var(--teal-500);font-weight:500;cursor:pointer}
+
+    /* Schedule */
+    .schedule-day{display:flex;gap:.5rem;overflow-x:auto;margin-bottom:1rem;scrollbar-width:none}
+    .day-pill{padding:.5rem 1rem;border-radius:var(--r-md);font-size:.8rem;cursor:pointer;transition:all .2s;border:1px solid var(--border);white-space:nowrap;font-family:var(--font-body)}
+    .day-pill.active{background:rgba(0,201,167,.12);border-color:var(--border-2);color:var(--teal-500)}
+    .day-pill:not(.active):hover{background:var(--glass);border-color:rgba(255,255,255,.15)}
+    .schedule-timeline{display:flex;flex-direction:column;gap:.5rem;max-height:320px;overflow-y:auto;padding-right:.25rem}
+    .slot-item{display:flex;gap:.75rem;padding:.75rem;border-radius:var(--r-md);background:var(--surface-3);border:1px solid var(--border);transition:all .2s}
+    .slot-item.has-appt{border-left:3px solid var(--teal-500);background:rgba(0,201,167,.04)}
+    .slot-item.pending{border-left:3px solid var(--warning)}
+    .slot-item.free{border-left:3px solid var(--border);opacity:.6}
+    .slot-time{font-family:var(--font-mono);font-size:.8rem;color:var(--text-3);min-width:42px;flex-shrink:0;padding-top:.1rem}
+    .slot-info{flex:1}
+    .slot-patient{font-size:.875rem;font-weight:600;color:var(--text-1)}
+    .slot-reason{font-size:.72rem;color:var(--text-3);margin-top:.1rem}
+    .slot-actions{display:flex;gap:.4rem;align-items:center}
+    .badge{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .55rem;border-radius:999px;font-size:.68rem;font-family:var(--font-mono)}
+    .b-confirm{background:rgba(0,201,167,.1);color:var(--teal-500);border:1px solid rgba(0,201,167,.2)}
+    .b-pending{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+    .b-free{background:rgba(107,128,166,.1);color:var(--text-3);border:1px solid var(--border)}
+
+    /* Patients table */
+    .table-wrap{overflow-x:auto;border-radius:var(--r-lg);border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse}
+    thead{background:var(--surface-3)}
+    th{padding:.7rem 1rem;text-align:left;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3)}
+    td{padding:.8rem 1rem;font-size:.85rem;border-top:1px solid var(--border);color:var(--text-2)}
+    tbody tr:hover{background:rgba(255,255,255,.02)}
+    .patient-cell{display:flex;align-items:center;gap:.6rem}
+    .p-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+    .av-a{background:rgba(59,130,246,.15);color:#3b82f6}
+    .av-b{background:rgba(139,92,246,.15);color:#8b5cf6}
+    .av-c{background:rgba(0,201,167,.15);color:var(--teal-500)}
+    .av-d{background:rgba(245,158,11,.15);color:#f59e0b}
+    .av-e{background:rgba(239,68,68,.15);color:#ef4444}
+    .p-name{font-size:.85rem;font-weight:500;color:var(--text-1)}
+
+    /* Chart simulation */
+    .chart-area{display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:.5rem}
+    .c-bar{flex:1;border-radius:4px 4px 0 0;transition:all .3s;position:relative;cursor:pointer}
+    .c-bar:hover{filter:brightness(1.2)}
+    .c-bar.teal{background:linear-gradient(to top,var(--teal-600),var(--teal-400))}
+    .c-bar.blue{background:linear-gradient(to top,#1d4ed8,#60a5fa)}
+    .chart-labels{display:flex;gap:6px;font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)}
+    .chart-labels span{flex:1;text-align:center}
+
+    /* Consultation modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(4,13,26,.88);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;width:100%;max-width:580px;box-shadow:0 40px 80px rgba(0,0,0,.6);animation:scaleIn .25s var(--ease);max-height:90vh;overflow-y:auto}
+    .modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+    .modal-title{font-family:var(--font-head);font-size:1.15rem;font-weight:600}
+    .close-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-3);cursor:pointer;transition:all .2s}
+    .close-btn:hover{border-color:var(--danger);color:var(--danger)}
+    .modal-form{display:flex;flex-direction:column;gap:1rem}
+    .form-group{display:flex;flex-direction:column;gap:.35rem}
+    .form-label{font-size:.82rem;font-weight:500;color:var(--text-2)}
+    .form-input{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.65rem .9rem;color:var(--text-1);font-size:.875rem;outline:none;transition:border-color .2s;font-family:var(--font-body);width:100%}
+    .form-input:focus{border-color:var(--teal-500)}
+    textarea.form-input{resize:vertical;min-height:80px}
+    .modal-actions{display:flex;gap:.75rem;margin-top:.5rem}
+    .modal-actions .btn{flex:1;justify-content:center;padding:.8rem}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-icon"><i class="fa-solid fa-stethoscope"></i></div>Medi<span class="accent">Connect</span></div>
+    <div class="sidebar-user">
+      <div class="su-avatar">KS</div>
+      <div><div class="su-name">Dr. Karim Salah</div><div class="su-role">Médecin · Cardiologue</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active"><i class="fa-solid fa-house"></i>Tableau de bord</div>
+      <div class="nav-item" onclick="showConsultModal()"><i class="fa-solid fa-calendar-days"></i>Mon agenda<span class="nav-badge">3</span></div>
+      <div class="nav-item"><i class="fa-solid fa-users"></i>Mes patients</div>
+      <div class="nav-item"><i class="fa-solid fa-comments"></i>Messagerie<span class="nav-badge">2</span></div>
+      <div class="nav-section-label">Médical</div>
+      <div class="nav-item"><i class="fa-solid fa-file-medical"></i>Consultations</div>
+      <div class="nav-item"><i class="fa-solid fa-file-prescription"></i>Ordonnances</div>
+      <div class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i>Historique</div>
+      <div class="nav-section-label">Compte</div>
+      <div class="nav-item"><i class="fa-solid fa-bell"></i>Notifications<span class="nav-badge">5</span></div>
+      <div class="nav-item"><i class="fa-solid fa-user-gear"></i>Mon profil</div>
+      <div class="nav-item"><i class="fa-solid fa-calendar-week"></i>Disponibilités</div>
+    </nav>
+    <div class="sidebar-footer"><a href="login.html" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i>Déconnexion</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="page-title">Tableau de bord — Médecin</div>
+        <div style="font-size:.72rem;color:var(--text-3);font-family:var(--font-mono)">Mercredi 7 Avril 2025</div>
+      </div>
+      <div class="topbar-right">
+        <div class="live-badge"><span class="live-dot"></span>3 patients en attente</div>
+        <button class="icon-btn"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="su-avatar" style="cursor:pointer">KS</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" style="animation-delay:.05s"><div class="stat-icon si-teal"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-info"><div class="val">24</div><div class="lbl">RDV aujourd'hui</div></div></div>
+        <div class="stat-card" style="animation-delay:.1s"><div class="stat-icon si-blue"><i class="fa-solid fa-users"></i></div><div class="stat-info"><div class="val">187</div><div class="lbl">Patients actifs</div></div></div>
+        <div class="stat-card" style="animation-delay:.15s"><div class="stat-icon si-purple"><i class="fa-solid fa-clock"></i></div><div class="stat-info"><div class="val">3</div><div class="lbl">En attente</div></div></div>
+        <div class="stat-card" style="animation-delay:.2s"><div class="stat-icon si-amber"><i class="fa-solid fa-star"></i></div><div class="stat-info"><div class="val">4.9</div><div class="lbl">Note moyenne</div></div></div>
+        <div class="stat-card" style="animation-delay:.25s"><div class="stat-icon si-green"><i class="fa-solid fa-check-circle"></i></div><div class="stat-info"><div class="val">142</div><div class="lbl">Ce mois-ci</div></div></div>
+      </div>
+
+      <!-- Three col -->
+      <div class="three-col">
+        <!-- Schedule -->
+        <div class="card" style="animation-delay:.3s">
+          <div class="card-header"><span class="card-title">Agenda du jour</span><span class="card-action">Voir calendrier →</span></div>
+          <div class="schedule-day">
+            <div class="day-pill active">Auj. 7</div>
+            <div class="day-pill">Jeu. 8</div>
+            <div class="day-pill">Ven. 9</div>
+            <div class="day-pill">Lun. 12</div>
+            <div class="day-pill">Mar. 13</div>
+          </div>
+          <div class="schedule-timeline">
+            <div class="slot-item free"><div class="slot-time">08:00</div><div class="slot-info"><div class="slot-patient" style="color:var(--text-3)">Créneau libre</div></div><span class="badge b-free">Libre</span></div>
+            <div class="slot-item has-appt"><div class="slot-time">09:30</div><div class="slot-info"><div class="slot-patient">Sana Amara</div><div class="slot-reason"><i class="fa-solid fa-video" style="font-size:.65rem"></i> Suivi cardiologique</div></div><div class="slot-actions"><span class="badge b-confirm">Confirmé</span><button class="btn btn-sm btn-primary" onclick="showConsultModal()" style="padding:.25rem .6rem;font-size:.72rem">Démarrer</button></div></div>
+            <div class="slot-item pending"><div class="slot-time">10:30</div><div class="slot-info"><div class="slot-patient">Karim Mansour</div><div class="slot-reason"><i class="fa-solid fa-comment" style="font-size:.65rem"></i> Douleurs thoraciques</div></div><div class="slot-actions"><span class="badge b-pending">Attente</span><div style="display:flex;gap:.3rem"><button class="btn btn-sm btn-success" onclick="toast('RDV confirmé')">✓</button><button class="btn btn-sm btn-danger" onclick="toast('RDV refusé','error')">✕</button></div></div></div>
+            <div class="slot-item has-appt"><div class="slot-time">11:30</div><div class="slot-info"><div class="slot-patient">Leila Bouaziz</div><div class="slot-reason"><i class="fa-solid fa-video" style="font-size:.65rem"></i> Bilan annuel</div></div><div class="slot-actions"><span class="badge b-confirm">Confirmé</span></div></div>
+            <div class="slot-item free"><div class="slot-time">12:00</div><div class="slot-info"><div class="slot-patient" style="color:var(--text-3)">Pause déjeuner</div></div></div>
+            <div class="slot-item pending"><div class="slot-time">14:00</div><div class="slot-info"><div class="slot-patient">Omar Ferjani</div><div class="slot-reason"><i class="fa-solid fa-comment" style="font-size:.65rem"></i> Résultats ECG</div></div><div class="slot-actions"><span class="badge b-pending">Attente</span><div style="display:flex;gap:.3rem"><button class="btn btn-sm btn-success" onclick="toast('RDV confirmé')">✓</button><button class="btn btn-sm btn-danger" onclick="toast('RDV refusé','error')">✕</button></div></div></div>
+            <div class="slot-item has-appt"><div class="slot-time">15:30</div><div class="slot-info"><div class="slot-patient">Amira Trabelsi</div><div class="slot-reason"><i class="fa-solid fa-microphone" style="font-size:.65rem"></i> Nouveau patient</div></div><div class="slot-actions"><span class="badge b-confirm">Confirmé</span></div></div>
+          </div>
+        </div>
+
+        <!-- Chart + Recent -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+          <div class="card" style="animation-delay:.35s">
+            <div class="card-header"><span class="card-title">Consultations — 7 derniers jours</span></div>
+            <div class="chart-area">
+              <div class="c-bar teal" style="height:40%"></div>
+              <div class="c-bar teal" style="height:65%"></div>
+              <div class="c-bar teal" style="height:50%"></div>
+              <div class="c-bar teal" style="height:85%"></div>
+              <div class="c-bar blue" style="height:55%"></div>
+              <div class="c-bar teal" style="height:70%"></div>
+              <div class="c-bar teal" style="height:45%"></div>
+            </div>
+            <div class="chart-labels"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+          </div>
+          <div class="card" style="animation-delay:.4s">
+            <div class="card-header"><span class="card-title">Demandes en attente</span><span class="nav-badge" style="background:var(--danger);color:#fff;padding:.1rem .45rem;border-radius:999px;font-size:.65rem">3</span></div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <div style="display:flex;align-items:center;gap:.6rem;padding:.6rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid rgba(245,158,11,.2)">
+                <div class="p-av av-a">KM</div>
+                <div style="flex:1"><div class="p-name">Karim Mansour</div><div style="font-size:.7rem;color:var(--text-3)">10:30 · Chat · Douleurs thoraciques</div></div>
+                <div style="display:flex;gap:.4rem">
+                  <button class="btn btn-success btn-sm" onclick="toast('RDV confirmé')"><i class="fa-solid fa-check"></i></button>
+                  <button class="btn btn-danger btn-sm" onclick="toast('RDV refusé','error')"><i class="fa-solid fa-times"></i></button>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:.6rem;padding:.6rem;background:var(--surface-3);border-radius:var(--r-md);border:1px solid rgba(245,158,11,.2)">
+                <div class="p-av av-d">OF</div>
+                <div style="flex:1"><div class="p-name">Omar Ferjani</div><div style="font-size:.7rem;color:var(--text-3)">14:00 · Chat · Résultats ECG</div></div>
+                <div style="display:flex;gap:.4rem">
+                  <button class="btn btn-success btn-sm" onclick="toast('RDV confirmé')"><i class="fa-solid fa-check"></i></button>
+                  <button class="btn btn-danger btn-sm" onclick="toast('RDV refusé','error')"><i class="fa-solid fa-times"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions + Reviews -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+          <div class="card" style="animation-delay:.35s">
+            <div class="card-title" style="margin-bottom:1rem">Actions rapides</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="showConsultModal()"><i class="fa-solid fa-notes-medical"></i>Nouvelle ordonnance</button>
+              <button class="btn btn-secondary" style="width:100%;justify-content:center"><i class="fa-solid fa-calendar-week"></i>Gérer disponibilités</button>
+              <button class="btn btn-secondary" style="width:100%;justify-content:center"><i class="fa-solid fa-file-export"></i>Exporter rapports</button>
+            </div>
+          </div>
+          <div class="card" style="animation-delay:.4s">
+            <div class="card-header"><span class="card-title">Derniers avis</span></div>
+            <div style="display:flex;flex-direction:column;gap:.75rem">
+              <div style="background:var(--surface-3);border-radius:var(--r-md);padding:.75rem;border:1px solid var(--border)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
+                  <span style="font-size:.8rem;font-weight:600">Sana A.</span>
+                  <span style="color:#f59e0b;font-size:.75rem">★★★★★</span>
+                </div>
+                <p style="font-size:.78rem;color:var(--text-2);line-height:1.5">"Très professionnel, explications claires."</p>
+                <span style="font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)">Il y a 2 jours</span>
+              </div>
+              <div style="background:var(--surface-3);border-radius:var(--r-md);padding:.75rem;border:1px solid var(--border)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
+                  <span style="font-size:.8rem;font-weight:600">Mohamed B.</span>
+                  <span style="color:#f59e0b;font-size:.75rem">★★★★☆</span>
+                </div>
+                <p style="font-size:.78rem;color:var(--text-2);line-height:1.5">"Excellent suivi, je recommande."</p>
+                <span style="font-size:.65rem;color:var(--text-3);font-family:var(--font-mono)">Il y a 5 jours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patients table -->
+      <div class="card" style="animation-delay:.45s">
+        <div class="card-header"><span class="card-title">Patients récents</span><button class="btn btn-secondary btn-sm">Voir tous →</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Patient</th><th>Dernière consultation</th><th>Motif</th><th>Type</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div class="patient-cell"><div class="p-av av-c">SA</div><div class="p-name">Sana Amara</div></div></td><td>07/04/2025</td><td>Suivi cardiologique</td><td><span style="font-size:.75rem"><i class="fa-solid fa-video" style="color:var(--teal-500)"></i> Vidéo</span></td><td><span class="badge b-confirm">Confirmé</span></td><td><button class="btn btn-primary btn-sm" onclick="showConsultModal()">Consulter</button></td></tr>
+              <tr><td><div class="patient-cell"><div class="p-av av-a">KM</div><div class="p-name">Karim Mansour</div></div></td><td>05/04/2025</td><td>Douleurs thoraciques</td><td><span style="font-size:.75rem"><i class="fa-solid fa-comment" style="color:#3b82f6"></i> Chat</span></td><td><span class="badge b-pending">En attente</span></td><td><button class="btn btn-secondary btn-sm">Voir dossier</button></td></tr>
+              <tr><td><div class="patient-cell"><div class="p-av av-b">LB</div><div class="p-name">Leila Bouaziz</div></div></td><td>06/04/2025</td><td>Bilan annuel</td><td><span style="font-size:.75rem"><i class="fa-solid fa-video" style="color:var(--teal-500)"></i> Vidéo</span></td><td><span class="badge b-confirm">Confirmé</span></td><td><button class="btn btn-primary btn-sm" onclick="showConsultModal()">Consulter</button></td></tr>
+              <tr><td><div class="patient-cell"><div class="p-av av-d">OF</div><div class="p-name">Omar Ferjani</div></div></td><td>03/04/2025</td><td>Résultats ECG</td><td><span style="font-size:.75rem"><i class="fa-solid fa-comment" style="color:#3b82f6"></i> Chat</span></td><td><span class="badge b-pending">En attente</span></td><td><button class="btn btn-secondary btn-sm">Voir dossier</button></td></tr>
+              <tr><td><div class="patient-cell"><div class="p-av av-e">AT</div><div class="p-name">Amira Trabelsi</div></div></td><td>04/04/2025</td><td>Nouveau patient</td><td><span style="font-size:.75rem"><i class="fa-solid fa-microphone" style="color:#f59e0b"></i> Audio</span></td><td><span class="badge b-confirm">Confirmé</span></td><td><button class="btn btn-primary btn-sm" onclick="showConsultModal()">Consulter</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Consultation Modal -->
+  <div class="modal-overlay" id="consultModal">
+    <div class="modal">
+      <div class="modal-hdr">
+        <span class="modal-title"><i class="fa-solid fa-notes-medical" style="color:var(--teal-500);margin-right:.5rem"></i>Compte-rendu de consultation</span>
+        <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="background:var(--surface-3);border-radius:var(--r-md);padding:1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;border:1px solid var(--border)">
+        <div class="p-av av-c" style="width:42px;height:42px;font-size:.85rem">SA</div>
+        <div><div style="font-weight:600">Sana Amara</div><div style="font-size:.75rem;color:var(--text-3)">09:30 · Vidéo · Suivi cardiologique</div></div>
+        <span class="badge b-confirm" style="margin-left:auto">En cours</span>
+      </div>
+      <div class="modal-form">
+        <div class="form-group"><label class="form-label"><i class="fa-solid fa-stethoscope" style="color:var(--teal-500)"></i> Diagnostic</label><textarea class="form-input" rows="2" placeholder="Entrez votre diagnostic…"></textarea></div>
+        <div class="form-group"><label class="form-label"><i class="fa-solid fa-file-prescription" style="color:#3b82f6"></i> Prescription / Traitement</label><textarea class="form-input" rows="3" placeholder="Médicaments, dosages, durée…"></textarea></div>
+        <div class="form-group"><label class="form-label"><i class="fa-solid fa-clipboard" style="color:#8b5cf6"></i> Notes médicales</label><textarea class="form-input" rows="2" placeholder="Notes supplémentaires…"></textarea></div>
+        <div class="form-group"><label class="form-label">Date de suivi (optionnel)</label><input type="date" class="form-input"/></div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()"><i class="fa-solid fa-floppy-disk"></i>Sauvegarder brouillon</button>
+          <button class="btn btn-primary" onclick="closeModal();toast('Consultation terminée avec succès')"><i class="fa-solid fa-check-circle"></i>Terminer la consultation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showConsultModal(){document.getElementById('consultModal').classList.add('open')}
+    function closeModal(){document.getElementById('consultModal').classList.remove('open')}
+    document.getElementById('consultModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()})
+    function toast(msg,type='success'){
+      const t=document.createElement('div');
+      const c={success:'#22c55e',error:'#ef4444',info:'#3b82f6'};
+      const ic={success:'fa-circle-check',error:'fa-circle-xmark',info:'fa-circle-info'};
+      t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid ${c[type]||c.success};border-radius:12px;padding:.85rem 1.2rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:9999;font-size:.875rem;animation:slideIn .3s ease;max-width:320px;color:var(--text-1)`;
+      t.innerHTML=`<i class="fa-solid ${ic[type]||ic.success}" style="color:${c[type]||c.success}"></i>${msg}`;
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(),3500);
+    }
+  </script>
+</body>
+</html>

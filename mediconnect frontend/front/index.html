@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MediConnect — Consultation Médicale en Ligne</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{
+      --navy:#040d1a;--s1:#0d1b35;--s2:#111f3e;--s3:#162848;
+      --teal:#00c9a7;--teal2:#1de9c8;--teal3:#00a887;
+      --t1:#f0f4ff;--t2:#a8b8d8;--t3:#6b80a6;
+      --bd:rgba(255,255,255,.08);--bd2:rgba(0,201,167,.25);
+      --gl:rgba(255,255,255,.04);
+      --ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--info:#3b82f6;
+      --fh:'Sora',sans-serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;
+      --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--fb);background:var(--navy);color:var(--t1);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none} button{cursor:pointer;border:none;background:none;font:inherit}
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--navy)} ::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px}
+
+    /* BG */
+    .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.1;animation:drift 14s ease-in-out infinite}
+    .o1{width:700px;height:700px;background:var(--teal);top:-200px;left:-200px}
+    .o2{width:500px;height:500px;background:#3b82f6;top:40%;right:-200px;animation-delay:-5s}
+    .o3{width:400px;height:400px;background:#8b5cf6;bottom:-100px;left:35%;animation-delay:-10s}
+    .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,201,167,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,201,167,.025) 1px,transparent 1px);background-size:64px 64px}
+    @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(25px,-18px) scale(1.04)}}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(4,13,26,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd)}
+    .logo{display:flex;align-items:center;gap:.75rem;font-family:var(--fh);font-weight:700;font-size:1.35rem}
+    .li{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--navy);box-shadow:0 0 24px rgba(0,201,167,.4)}
+    .ac{color:var(--teal)}
+    .nav-links{display:flex;align-items:center;gap:2.5rem}
+    .nav-links a{font-size:.9rem;color:var(--t2);font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--t1)}
+    .nav-cta{display:flex;gap:.75rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;border-radius:16px;font-size:.9rem;font-weight:500;transition:all .25s var(--ease);white-space:nowrap;font-family:var(--fb)}
+    .btn-g{color:var(--t2);border:1px solid var(--bd)}
+    .btn-g:hover{color:var(--t1);border-color:var(--bd2);background:rgba(0,201,167,.05)}
+    .btn-p{background:var(--teal);color:var(--navy);box-shadow:0 0 20px rgba(0,201,167,.3)}
+    .btn-p:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 0 32px rgba(0,201,167,.45)}
+    .btn-lg{padding:.9rem 2.2rem;font-size:1.05rem}
+    @media(max-width:768px){.nav-links{display:none}.nav-cta .btn-g{display:none}}
+
+    /* HERO */
+    .hero{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;padding:8rem 3rem 5rem;max-width:1280px;margin:0 auto;gap:4rem}
+    .hl{flex:1;max-width:630px}
+    .hbadge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:999px;padding:.35rem 1rem;font-size:.78rem;font-family:var(--fm);color:var(--teal);margin-bottom:1.75rem;animation:fu .5s var(--ease)}
+    .bdot{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
+    h1{font-family:var(--fh);font-size:clamp(2.4rem,5vw,3.9rem);font-weight:800;line-height:1.1;margin-bottom:1.25rem;animation:fu .5s var(--ease) .1s both}
+    .gt{background:linear-gradient(135deg,var(--teal2),#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hdesc{font-size:1.05rem;color:var(--t2);line-height:1.75;margin-bottom:2.25rem;max-width:500px;animation:fu .5s var(--ease) .2s both}
+    .hact{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;animation:fu .5s var(--ease) .3s both}
+    .hst{display:flex;gap:2.5rem;flex-wrap:wrap;animation:fu .5s var(--ease) .4s both}
+    .hst .v{font-family:var(--fh);font-size:1.9rem;font-weight:700}
+    .hst .l{font-size:.8rem;color:var(--t3)}
+    .hr{flex:1;display:flex;justify-content:center;align-items:center;animation:fi .8s var(--ease) .3s both}
+    @media(max-width:900px){.hero{flex-direction:column;padding:7rem 1.5rem 4rem;text-align:center}.hst{justify-content:center}.hact{justify-content:center}.hr{width:100%}}
+
+    /* PREVIEW CARD */
+    .pc{background:var(--s2);border:1px solid var(--bd);border-radius:24px;padding:1.5rem;width:460px;max-width:100%;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 50px rgba(0,201,167,.08);animation:float 5s ease-in-out infinite;position:relative;overflow:hidden}
+    .pc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    .pch{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:.85rem;border-bottom:1px solid var(--bd)}
+    .pct{font-family:var(--fh);font-size:.875rem;font-weight:600;color:var(--t2)}
+    .pcd{display:flex;gap:4px}
+    .pcd span{width:8px;height:8px;border-radius:50%}
+    .dr{background:#ef4444}.dy{background:#f59e0b}.dg{background:#22c55e}
+    .pcs{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+    .ps{background:var(--s3);border-radius:12px;padding:.75rem;border:1px solid var(--bd)}
+    .ps .v{font-family:var(--fm);font-size:1.3rem;font-weight:700}
+    .ps .l{font-size:.68rem;color:var(--t3);margin-top:1px}
+    .ps.ct .v{color:var(--teal)}.ps.cb .v{color:#3b82f6}.ps.cp .v{color:#8b5cf6}
+    .pcch{background:var(--s3);border-radius:12px;padding:.75rem;border:1px solid var(--bd);margin-bottom:.75rem}
+    .cl{font-size:.68rem;color:var(--t3);margin-bottom:.5rem}
+    .cb{display:flex;align-items:flex-end;gap:4px;height:56px}
+    .bar{flex:1;background:#112952;border-radius:3px 3px 0 0;position:relative;overflow:hidden}
+    .bar::after{content:'';position:absolute;bottom:0;left:0;right:0;border-radius:3px 3px 0 0;animation:bg 1.2s var(--ease) both}
+    .b1::after{height:42%;background:var(--teal);animation-delay:.1s}
+    .b2::after{height:68%;background:var(--teal);animation-delay:.18s}
+    .b3::after{height:52%;background:var(--teal);animation-delay:.26s}
+    .b4::after{height:88%;background:linear-gradient(to top,var(--teal3),var(--teal2));animation-delay:.34s}
+    .b5::after{height:58%;background:var(--teal);animation-delay:.42s}
+    .b6::after{height:72%;background:var(--teal);animation-delay:.5s}
+    .b7::after{height:46%;background:var(--teal);animation-delay:.58s}
+    @keyframes bg{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+    .pca{display:flex;flex-direction:column;gap:.45rem}
+    .pa{display:flex;align-items:center;gap:.6rem;padding:.55rem .65rem;background:var(--s3);border-radius:12px;border:1px solid var(--bd)}
+    .pav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0}
+    .avt{background:rgba(0,201,167,.15);color:var(--teal)}
+    .avb{background:rgba(59,130,246,.15);color:#3b82f6}
+    .avp{background:rgba(139,92,246,.15);color:#8b5cf6}
+    .pan{font-size:.78rem;font-weight:600;color:var(--t1);flex:1}
+    .pb{font-size:.62rem;font-family:var(--fm);padding:.12rem .45rem;border-radius:999px}
+    .pbok{background:rgba(0,201,167,.12);color:var(--teal)}
+    .pbw{background:rgba(245,158,11,.12);color:#f59e0b}
+    .pbv{background:rgba(59,130,246,.12);color:#3b82f6}
+
+    /* SECTION */
+    .sec{position:relative;z-index:1;padding:6rem 3rem;max-width:1280px;margin:0 auto}
+    .stag{display:inline-block;font-family:var(--fm);font-size:.76rem;color:var(--teal);background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:999px;padding:.28rem .9rem;margin-bottom:1rem}
+    .sh2{font-family:var(--fh);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;margin-bottom:.75rem;line-height:1.2}
+    .sp{color:var(--t2);max-width:520px;line-height:1.75;font-size:.95rem}
+
+    /* FEATURES */
+    .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3.5rem}
+    @media(max-width:900px){.fg{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.fg{grid-template-columns:1fr}}
+    .fc{background:var(--s2);border:1px solid var(--bd);border-radius:24px;padding:1.75rem;transition:all .3s var(--ease);position:relative;overflow:hidden}
+    .fc::after{content:'';position:absolute;bottom:-50px;right:-50px;width:130px;height:130px;border-radius:50%;background:rgba(0,201,167,.03);transition:all .4s}
+    .fc:hover{border-color:var(--bd2);transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+    .fc:hover::after{transform:scale(1.6);background:rgba(0,201,167,.07)}
+    .fi{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1.1rem;border:1px solid}
+    .fit{background:rgba(0,201,167,.1);color:var(--teal);border-color:rgba(0,201,167,.2)}
+    .fib{background:rgba(59,130,246,.1);color:#3b82f6;border-color:rgba(59,130,246,.2)}
+    .fip{background:rgba(139,92,246,.1);color:#8b5cf6;border-color:rgba(139,92,246,.2)}
+    .fia{background:rgba(245,158,11,.1);color:#f59e0b;border-color:rgba(245,158,11,.2)}
+    .fig{background:rgba(34,197,94,.1);color:#22c55e;border-color:rgba(34,197,94,.2)}
+    .fir{background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.2)}
+    .fc h3{font-family:var(--fh);font-size:1.05rem;margin-bottom:.5rem}
+    .fc p{font-size:.875rem;color:var(--t2);line-height:1.65}
+
+    /* SPECIALTIES */
+    .sps{display:flex;gap:.65rem;overflow-x:auto;padding:.5rem 0 1rem;scrollbar-width:none;margin-top:2rem}
+    .sps::-webkit-scrollbar{display:none}
+    .sp-pill{display:flex;align-items:center;gap:.5rem;background:var(--s2);border:1px solid var(--bd);border-radius:999px;padding:.5rem 1.1rem;white-space:nowrap;font-size:.85rem;cursor:pointer;transition:all .25s;flex-shrink:0}
+    .sp-pill i{font-size:.85rem;color:var(--teal)}
+    .sp-pill:hover{border-color:var(--bd2);color:var(--teal);transform:translateY(-2px)}
+
+    /* STEPS */
+    .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:3.5rem;position:relative}
+    .sg::before{content:'';position:absolute;top:27px;left:14%;right:14%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,201,167,.25),transparent)}
+    @media(max-width:900px){.sg{grid-template-columns:1fr 1fr}.sg::before{display:none}}
+    .step{text-align:center}
+    .snum{width:56px;height:56px;border-radius:50%;background:var(--s2);border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-weight:700;font-size:1.1rem;color:var(--teal);margin:0 auto 1.25rem;transition:all .3s}
+    .step:hover .snum{background:rgba(0,201,167,.1);box-shadow:0 0 20px rgba(0,201,167,.2)}
+    .step h3{font-family:var(--fh);font-size:1rem;margin-bottom:.4rem}
+    .step p{font-size:.82rem;color:var(--t3);line-height:1.5}
+
+    /* DOCTORS */
+    .dg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+    @media(max-width:900px){.dg{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.dg{grid-template-columns:1fr}}
+    .dc{background:var(--s2);border:1px solid var(--bd);border-radius:24px;padding:1.75rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.6rem;transition:all .3s var(--ease)}
+    .dc:hover{border-color:var(--bd2);transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+    .dav{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--s3),#112952);border:3px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-family:var(--fh);font-weight:700;color:var(--teal);margin-bottom:.4rem}
+    .dst{font-size:.7rem;font-family:var(--fm);padding:.18rem .6rem;border-radius:999px;background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+    .dn{font-family:var(--fh);font-size:1.05rem;font-weight:600}
+    .dsp{font-size:.78rem;color:var(--teal);font-family:var(--fm)}
+    .dstar{display:flex;justify-content:center;gap:2px}
+    .dstar i{font-size:.75rem;color:#f59e0b}
+    .dinf{font-size:.78rem;color:var(--t3)}
+
+    /* CTA */
+    .cta{position:relative;z-index:1;margin:0 3rem 4rem;background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--bd2);border-radius:32px;padding:4rem 3rem;text-align:center;overflow:hidden}
+    .cta::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(0,201,167,.08),transparent 70%);border-radius:50%;pointer-events:none}
+    .cta h2{font-family:var(--fh);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;margin-bottom:.75rem}
+    .cta p{color:var(--t2);max-width:480px;margin:0 auto 2rem;line-height:1.7}
+    .ctab{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    @media(max-width:600px){.cta{margin:0 1rem 3rem}}
+
+    /* FOOTER */
+    footer{position:relative;z-index:1;background:var(--s2);border-top:1px solid var(--bd);padding:3rem 3rem 1.5rem}
+    .fg2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem;max-width:1280px;margin-left:auto;margin-right:auto}
+    @media(max-width:768px){.fg2{grid-template-columns:1fr 1fr}}
+    .fb p{font-size:.875rem;color:var(--t3);margin-top:.85rem;line-height:1.65;max-width:290px}
+    .fc2 h4{font-family:var(--fh);font-size:.875rem;font-weight:600;margin-bottom:1rem;color:var(--t2)}
+    .fc2 a{display:block;font-size:.85rem;color:var(--t3);margin-bottom:.55rem;transition:color .2s}
+    .fc2 a:hover{color:var(--teal)}
+    .fbot{max-width:1280px;margin:0 auto;border-top:1px solid var(--bd);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .fbot p{font-size:.8rem;color:var(--t3)}
+    .soc{display:flex;gap:.6rem}
+    .sb{width:34px;height:34px;border-radius:8px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--t3);transition:all .2s}
+    .sb:hover{border-color:var(--bd2);color:var(--teal);background:rgba(0,201,167,.06)}
+
+    @keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fi{from{opacity:0}to{opacity:1}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  </style>
+</head>
+<body>
+  <div class="bg"><div class="grid"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+
+  <nav>
+    <div class="logo"><div class="li"><i class="fa-solid fa-stethoscope"></i></div>Medi<span class="ac">Connect</span></div>
+    <div class="nav-links">
+      <a href="#features">Fonctionnalités</a>
+      <a href="#specialites">Spécialités</a>
+      <a href="#medecins">Médecins</a>
+      <a href="#comment">Comment ça marche</a>
+    </div>
+    <div class="nav-cta">
+      <a href="pages/login.html" class="btn btn-g">Connexion</a>
+      <a href="pages/register.html" class="btn btn-p"><i class="fa-solid fa-user-plus"></i>S'inscrire</a>
+    </div>
+  </nav>
+
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="hero">
+      <div class="hl">
+        <div class="hbadge"><span class="bdot"></span>Plateforme médicale certifiée</div>
+        <h1>Consultez un médecin <span class="gt">où que vous soyez</span></h1>
+        <p class="hdesc">MediConnect vous connecte instantanément avec des médecins spécialisés qualifiés. Consultation par vidéo, chat ou audio — disponible 24h/24.</p>
+        <div class="hact">
+          <a href="pages/register.html" class="btn btn-p btn-lg"><i class="fa-solid fa-calendar-check"></i>Prendre un rendez-vous</a>
+          <a href="#medecins" class="btn btn-g btn-lg"><i class="fa-solid fa-user-doctor"></i>Voir les médecins</a>
+        </div>
+        <div class="hst">
+          <div><div class="v">2 400+</div><div class="l">Médecins certifiés</div></div>
+          <div><div class="v">98%</div><div class="l">Satisfaction</div></div>
+          <div><div class="v">&lt;2min</div><div class="l">Temps réponse</div></div>
+        </div>
+      </div>
+      <div class="hr">
+        <div class="pc">
+          <div class="pch">
+            <span class="pct">Tableau de bord médecin</span>
+            <div class="pcd"><span class="dr"></span><span class="dy"></span><span class="dg"></span></div>
+          </div>
+          <div class="pcs">
+            <div class="ps ct"><div class="v">24</div><div class="l">Rendez-vous</div></div>
+            <div class="ps cb"><div class="v">187</div><div class="l">Patients</div></div>
+            <div class="ps cp"><div class="v">4.9★</div><div class="l">Note moy.</div></div>
+          </div>
+          <div class="pcch">
+            <div class="cl">Consultations — 7 jours</div>
+            <div class="cb"><div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"></div><div class="bar b4"></div><div class="bar b5"></div><div class="bar b6"></div><div class="bar b7"></div></div>
+          </div>
+          <div class="pca">
+            <div class="pa"><div class="pav avt">SA</div><span class="pan">Sana Amara · 09:30</span><span class="pb pbok">Confirmé</span></div>
+            <div class="pa"><div class="pav avb">KM</div><span class="pan">Karim Mansour · 11:00</span><span class="pb pbw">En attente</span></div>
+            <div class="pa"><div class="pav avp">LB</div><span class="pan">Leila Bouaziz · 14:30</span><span class="pb pbv">Vidéo</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="features">
+    <div class="stag">Fonctionnalités</div>
+    <h2 class="sh2">Tout ce dont vous avez besoin</h2>
+    <p class="sp">Une plateforme complète qui simplifie chaque aspect de la consultation médicale en ligne.</p>
+    <div class="fg">
+      <div class="fc"><div class="fi fit"><i class="fa-solid fa-video"></i></div><h3>Consultation HD temps réel</h3><p>Vidéo, audio ou chat avec vos médecins. Qualité HD, connexion stable, sans téléchargement.</p></div>
+      <div class="fc"><div class="fi fib"><i class="fa-solid fa-calendar-days"></i></div><h3>Agenda intelligent</h3><p>Réservation en 3 clics selon les disponibilités réelles. Rappels automatiques par SMS et email.</p></div>
+      <div class="fc"><div class="fi fip"><i class="fa-solid fa-robot"></i></div><h3>Chatbot d'orientation</h3><p>Un assistant IA analyse vos symptômes et vous oriente vers la bonne spécialité médicale.</p></div>
+      <div class="fc"><div class="fi fia"><i class="fa-solid fa-shield-halved"></i></div><h3>Données 100% sécurisées</h3><p>Chiffrement bout en bout, conformité RGPD complète. Vos données médicales restent privées.</p></div>
+      <div class="fc"><div class="fi fig"><i class="fa-solid fa-file-prescription"></i></div><h3>Ordonnances numériques</h3><p>Recevez et consultez vos prescriptions directement. Partageables avec votre pharmacie.</p></div>
+      <div class="fc"><div class="fi fir"><i class="fa-solid fa-star"></i></div><h3>Avis vérifiés</h3><p>Choisissez votre médecin en confiance grâce aux avis authentiques de patients vérifiés.</p></div>
+    </div>
+  </div>
+
+  <div class="sec" id="specialites" style="padding-top:2rem">
+    <div class="stag">Spécialités</div>
+    <h2 class="sh2">15+ spécialités disponibles</h2>
+    <div class="sps">
+      <div class="sp-pill"><i class="fa-solid fa-stethoscope"></i>Médecine générale</div>
+      <div class="sp-pill"><i class="fa-solid fa-heart-pulse"></i>Cardiologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-brain"></i>Neurologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-baby"></i>Pédiatrie</div>
+      <div class="sp-pill"><i class="fa-solid fa-eye"></i>Ophtalmologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-hand-dots"></i>Dermatologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-bone"></i>Orthopédie</div>
+      <div class="sp-pill"><i class="fa-solid fa-venus"></i>Gynécologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-lungs"></i>Pneumologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-microscope"></i>Endocrinologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-head-side-brain"></i>Psychiatrie</div>
+      <div class="sp-pill"><i class="fa-solid fa-ear-listen"></i>ORL</div>
+      <div class="sp-pill"><i class="fa-solid fa-pills"></i>Gastro-entérologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-circle-nodes"></i>Urologie</div>
+      <div class="sp-pill"><i class="fa-solid fa-joint"></i>Rhumatologie</div>
+    </div>
+  </div>
+
+  <div class="sec" id="comment">
+    <div class="stag">Mode d'emploi</div>
+    <h2 class="sh2">Simple en 4 étapes</h2>
+    <div class="sg">
+      <div class="step"><div class="snum">01</div><h3>Créez votre compte</h3><p>Inscription rapide en moins de 2 minutes, sans carte bancaire.</p></div>
+      <div class="step"><div class="snum">02</div><h3>Choisissez un médecin</h3><p>Filtrez par spécialité, disponibilité et avis patients.</p></div>
+      <div class="step"><div class="snum">03</div><h3>Réservez un créneau</h3><p>Choisissez votre date et heure préférées en temps réel.</p></div>
+      <div class="step"><div class="snum">04</div><h3>Consultez en ligne</h3><p>Par vidéo, audio ou chat — depuis n'importe quel appareil.</p></div>
+    </div>
+  </div>
+
+  <div class="sec" id="medecins">
+    <div class="stag">Notre équipe</div>
+    <h2 class="sh2">Médecins vérifiés & certifiés</h2>
+    <div class="dg">
+      <div class="dc"><div class="dav">KS</div><div class="dst">Disponible maintenant</div><div class="dn">Dr. Karim Salah</div><div class="dsp">Cardiologie</div><div class="dstar"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><div class="dinf">12 ans · 340 consultations</div><a href="pages/register.html" class="btn btn-p" style="margin-top:.5rem;font-size:.85rem;padding:.55rem 1.4rem">Prendre RDV</a></div>
+      <div class="dc"><div class="dav">NB</div><div class="dst">Disponible maintenant</div><div class="dn">Dr. Nadia Belhaj</div><div class="dsp">Neurologie</div><div class="dstar"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div><div class="dinf">8 ans · 210 consultations</div><a href="pages/register.html" class="btn btn-p" style="margin-top:.5rem;font-size:.85rem;padding:.55rem 1.4rem">Prendre RDV</a></div>
+      <div class="dc"><div class="dav">AM</div><div class="dst">Disponible maintenant</div><div class="dn">Dr. Ahmed Maalej</div><div class="dsp">Pédiatrie</div><div class="dstar"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><div class="dinf">15 ans · 520 consultations</div><a href="pages/register.html" class="btn btn-p" style="margin-top:.5rem;font-size:.85rem;padding:.55rem 1.4rem">Prendre RDV</a></div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>Prêt à prendre soin de votre santé ?</h2>
+    <p>Rejoignez des milliers de patients qui consultent déjà leurs médecins en ligne avec MediConnect.</p>
+    <div class="ctab">
+      <a href="pages/register.html" class="btn btn-p btn-lg"><i class="fa-solid fa-rocket"></i>Commencer gratuitement</a>
+      <a href="pages/login.html" class="btn btn-g btn-lg">J'ai déjà un compte</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="fg2">
+      <div class="fb">
+        <div class="logo"><div class="li"><i class="fa-solid fa-stethoscope"></i></div>Medi<span class="ac">Connect</span></div>
+        <p>La plateforme médicale de nouvelle génération pour des consultations accessibles, sécurisées et efficaces depuis chez vous.</p>
+      </div>
+      <div class="fc2"><h4>Plateforme</h4><a href="#">Médecins</a><a href="#">Spécialités</a><a href="#">Tarifs</a><a href="#">Chatbot IA</a></div>
+      <div class="fc2"><h4>Support</h4><a href="#">Centre d'aide</a><a href="#">Contact</a><a href="#">FAQ</a><a href="#">Statut</a></div>
+      <div class="fc2"><h4>Légal</h4><a href="#">Confidentialité</a><a href="#">Conditions</a><a href="#">RGPD</a><a href="#">Mentions légales</a></div>
+    </div>
+    <div class="fbot">
+      <p>&copy; 2025 <span style="color:var(--teal)">MediConnect</span> — PFE · Réalisé par Nader Saidi</p>
+      <div class="soc">
+        <a href="#" class="sb"><i class="fa-brands fa-github"></i></a>
+        <a href="#" class="sb"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="#" class="sb"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

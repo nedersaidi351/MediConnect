@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MediConnect — Inscription</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{
+      --navy-950:#040d1a;--navy-900:#071428;--navy-800:#0c1f3f;
+      --surface-1:#0d1b35;--surface-2:#111f3e;--surface-3:#162848;--surface-4:#1d3260;
+      --teal-500:#00c9a7;--teal-400:#1de9c8;--teal-600:#00a887;
+      --text-1:#f0f4ff;--text-2:#a8b8d8;--text-3:#6b80a6;
+      --border:rgba(255,255,255,0.08);--border-2:rgba(0,201,167,0.28);
+      --glass:rgba(255,255,255,0.04);
+      --success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;
+      --font-head:'Sora',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;
+      --r-md:12px;--r-lg:16px;--r-xl:24px;--ease:cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-body);background:var(--navy-950);color:var(--text-1);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+    a{color:inherit;text-decoration:none} button{cursor:pointer;border:none;background:none;font:inherit}
+
+    /* Animated bg */
+    .bg-orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.1;pointer-events:none;animation:drift 14s ease-in-out infinite}
+    .orb-1{width:500px;height:500px;background:#00c9a7;top:-150px;left:-150px;animation-delay:0s}
+    .orb-2{width:400px;height:400px;background:#3b82f6;bottom:-100px;right:-100px;animation-delay:-7s}
+    @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-15px)}}
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,201,167,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,201,167,0.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+
+    /* Navbar */
+    .topnav{position:fixed;top:0;left:0;right:0;z-index:50;padding:.85rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(4,13,26,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .logo{display:flex;align-items:center;gap:.65rem;font-family:var(--font-head);font-weight:700;font-size:1.2rem}
+    .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--teal-500),var(--teal-400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--navy-950)}
+    .accent{color:var(--teal-500)}
+    .nav-link{font-size:.875rem;color:var(--text-2);transition:color .2s}
+    .nav-link:hover{color:var(--text-1)} .nav-link span{color:var(--teal-500)}
+
+    /* Register card */
+    .register-card{position:relative;z-index:1;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-xl);width:100%;max-width:560px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5);margin-top:4rem}
+    .register-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal-500),transparent)}
+
+    /* Progress bar */
+    .progress-header{padding:1.75rem 2rem 0}
+    .progress-steps{display:flex;align-items:center;gap:0;margin-bottom:1.5rem}
+    .step-item{display:flex;align-items:center;flex:1}
+    .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;font-family:var(--font-mono);flex-shrink:0;transition:all .3s var(--ease);border:2px solid var(--border)}
+    .step-circle.done{background:var(--teal-500);border-color:var(--teal-500);color:var(--navy-950)}
+    .step-circle.active{background:rgba(0,201,167,.15);border-color:var(--teal-500);color:var(--teal-500);box-shadow:0 0 0 4px rgba(0,201,167,.12)}
+    .step-circle.pending{background:var(--surface-3);border-color:var(--border);color:var(--text-3)}
+    .step-line{flex:1;height:2px;background:var(--border);transition:background .4s;margin:0 4px}
+    .step-line.done{background:var(--teal-500)}
+    .step-label{font-size:.7rem;color:var(--text-3);margin-top:.35rem;text-align:center;white-space:nowrap}
+    .step-wrapper{display:flex;flex-direction:column;align-items:center}
+
+    /* Form panels */
+    .form-body{padding:0 2rem 2rem}
+    .panel{display:none;animation:fadeUp .35s var(--ease)}
+    .panel.active{display:block}
+    .panel-title{font-family:var(--font-head);font-size:1.2rem;font-weight:700;margin-bottom:.35rem}
+    .panel-subtitle{font-size:.875rem;color:var(--text-3);margin-bottom:1.5rem}
+
+    /* Role selector */
+    .role-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem}
+    .role-card{background:var(--surface-3);border:2px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;cursor:pointer;transition:all .25s var(--ease);text-align:center}
+    .role-card:hover{border-color:rgba(0,201,167,.4);background:rgba(0,201,167,.04)}
+    .role-card.selected{border-color:var(--teal-500);background:rgba(0,201,167,.08);box-shadow:0 0 0 3px rgba(0,201,167,.12)}
+    .role-icon{width:52px;height:52px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto .75rem;border:1px solid}
+    .ri-patient{background:rgba(0,201,167,.1);color:var(--teal-500);border-color:rgba(0,201,167,.2)}
+    .ri-doctor{background:rgba(59,130,246,.1);color:#3b82f6;border-color:rgba(59,130,246,.2)}
+    .ri-secretary{background:rgba(139,92,246,.1);color:#8b5cf6;border-color:rgba(139,92,246,.2)}
+    .ri-admin{background:rgba(245,158,11,.1);color:#f59e0b;border-color:rgba(245,158,11,.2)}
+    .role-card h3{font-family:var(--font-head);font-size:.95rem;margin-bottom:.25rem}
+    .role-card p{font-size:.75rem;color:var(--text-3)}
+    .role-check{display:none;width:20px;height:20px;border-radius:50%;background:var(--teal-500);color:var(--navy-950);font-size:.65rem;align-items:center;justify-content:center;margin:0 auto .5rem}
+    .role-card.selected .role-check{display:flex}
+
+    /* Form elements */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+    .form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.85rem}
+    .form-label{font-size:.82rem;font-weight:500;color:var(--text-2);display:flex;align-items:center;gap:.3rem}
+    .form-label .req{color:var(--teal-500)}
+    .input-wrap{position:relative}
+    .form-input{width:100%;background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-md);padding:.7rem 1rem .7rem 2.6rem;color:var(--text-1);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s;font-family:var(--font-body)}
+    .form-input::placeholder{color:var(--text-3)}
+    .form-input:focus{border-color:var(--teal-500);box-shadow:0 0 0 3px rgba(0,201,167,.1)}
+    .form-input.no-icon{padding-left:1rem}
+    .i-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:.85rem;pointer-events:none;transition:color .2s}
+    .input-wrap:focus-within .i-icon{color:var(--teal-500)}
+    .pass-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-3);cursor:pointer;background:none;border:none;padding:.2rem;font-size:.85rem;transition:color .2s}
+    .pass-eye:hover{color:var(--text-1)}
+    select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b80a6' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2.2rem}
+    .strength-bar{height:4px;border-radius:2px;background:var(--surface-4);margin-top:.35rem;overflow:hidden}
+    .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
+    .strength-label{font-size:.7rem;color:var(--text-3);margin-top:.2rem;font-family:var(--font-mono)}
+    .checkbox-group{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.85rem}
+    .checkbox-group input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal-500);flex-shrink:0;margin-top:2px;cursor:pointer}
+    .checkbox-label{font-size:.82rem;color:var(--text-2);line-height:1.5}
+    .checkbox-label a{color:var(--teal-500)}
+
+    /* Buttons */
+    .btn-row{display:flex;gap:.75rem;margin-top:1rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:var(--r-md);font-size:.9rem;font-weight:600;transition:all .25s var(--ease);font-family:var(--font-body);white-space:nowrap}
+    .btn-primary{background:var(--teal-500);color:var(--navy-950);flex:1;box-shadow:0 0 20px rgba(0,201,167,.25)}
+    .btn-primary:hover{background:var(--teal-400);transform:translateY(-1px);box-shadow:0 0 32px rgba(0,201,167,.4)}
+    .btn-ghost{background:var(--glass);border:1px solid var(--border);color:var(--text-2);padding:.7rem 1.25rem}
+    .btn-ghost:hover{border-color:var(--border-2);color:var(--text-1)}
+    .btn:disabled{opacity:.5;pointer-events:none}
+
+    /* Success panel */
+    .success-panel{text-align:center;padding:1rem 0 .5rem}
+    .success-icon{width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--success);margin:0 auto 1.25rem;animation:popIn .4s var(--ease)}
+    @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+    .success-panel h2{font-family:var(--font-head);font-size:1.4rem;font-weight:700;margin-bottom:.5rem}
+    .success-panel p{color:var(--text-2);font-size:.875rem;line-height:1.6;max-width:360px;margin:0 auto 1.5rem}
+    .divider{display:flex;align-items:center;gap:.75rem;color:var(--text-3);font-size:.78rem;margin:.75rem 0}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+    /* Info box (doctor extra fields) */
+    .info-box{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.18);border-radius:var(--r-md);padding:.85rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--text-2);display:flex;align-items:flex-start;gap:.6rem}
+    .info-box i{color:#3b82f6;margin-top:.1rem;flex-shrink:0}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="grid-bg"></div>
+
+  <nav class="topnav">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-stethoscope"></i></div>
+      Medi<span class="accent">Connect</span>
+    </a>
+    <span class="nav-link">Déjà inscrit ? <a href="login.html"><span>Se connecter →</span></a></span>
+  </nav>
+
+  <div class="register-card">
+    <!-- Progress -->
+    <div class="progress-header">
+      <div class="progress-steps" id="progressSteps">
+        <div class="step-wrapper">
+          <div class="step-circle active" id="sc1">1</div>
+          <div class="step-label">Rôle</div>
+        </div>
+        <div class="step-line" id="sl1"></div>
+        <div class="step-wrapper">
+          <div class="step-circle pending" id="sc2">2</div>
+          <div class="step-label">Identité</div>
+        </div>
+        <div class="step-line" id="sl2"></div>
+        <div class="step-wrapper">
+          <div class="step-circle pending" id="sc3">3</div>
+          <div class="step-label">Compte</div>
+        </div>
+        <div class="step-line" id="sl3"></div>
+        <div class="step-wrapper">
+          <div class="step-circle pending" id="sc4"><i class="fa-solid fa-check" style="font-size:.7rem"></i></div>
+          <div class="step-label">Confirmer</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-body">
+
+      <!-- Step 1: Role selection -->
+      <div class="panel active" id="panel1">
+        <div class="panel-title">Choisissez votre rôle</div>
+        <div class="panel-subtitle">Quel type de compte souhaitez-vous créer ?</div>
+        <div class="role-grid">
+          <div class="role-card" onclick="selectRole(this,'patient')" data-role="patient">
+            <div class="role-check"><i class="fa-solid fa-check"></i></div>
+            <div class="role-icon ri-patient"><i class="fa-solid fa-user"></i></div>
+            <h3>Patient</h3>
+            <p>Consulter des médecins et gérer votre santé</p>
+          </div>
+          <div class="role-card" onclick="selectRole(this,'doctor')" data-role="doctor">
+            <div class="role-check"><i class="fa-solid fa-check"></i></div>
+            <div class="role-icon ri-doctor"><i class="fa-solid fa-user-doctor"></i></div>
+            <h3>Médecin</h3>
+            <p>Gérer vos patients et consultations</p>
+          </div>
+          <div class="role-card" onclick="selectRole(this,'secretary')" data-role="secretary">
+            <div class="role-check"><i class="fa-solid fa-check"></i></div>
+            <div class="role-icon ri-secretary"><i class="fa-solid fa-calendar-days"></i></div>
+            <h3>Secrétaire</h3>
+            <p>Gérer les agendas médicaux</p>
+          </div>
+          <div class="role-card" onclick="selectRole(this,'admin')" data-role="admin">
+            <div class="role-check"><i class="fa-solid fa-check"></i></div>
+            <div class="role-icon ri-admin"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Administrateur</h3>
+            <p>Gérer la plateforme</p>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnNext1" onclick="goTo(2)" disabled>Continuer <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Step 2: Identity -->
+      <div class="panel" id="panel2">
+        <div class="panel-title">Vos informations personnelles</div>
+        <div class="panel-subtitle">Ces informations seront utilisées pour votre profil médical.</div>
+
+        <div id="doctorInfo" style="display:none">
+          <div class="info-box"><i class="fa-solid fa-circle-info"></i>En tant que médecin, votre compte sera soumis à validation par notre équipe avant activation. Préparez votre numéro de licence.</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prénom <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user i-icon"></i>
+              <input type="text" class="form-input" id="firstName" placeholder="Sana"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user i-icon"></i>
+              <input type="text" class="form-input" id="lastName" placeholder="Amara"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Téléphone</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-phone i-icon"></i>
+              <input type="tel" class="form-input" placeholder="+216 XX XXX XXX"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date de naissance</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-calendar i-icon"></i>
+              <input type="date" class="form-input"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sexe</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-venus-mars i-icon"></i>
+            <select class="form-input">
+              <option value="">Sélectionner…</option>
+              <option>Masculin</option>
+              <option>Féminin</option>
+              <option>Préfère ne pas préciser</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Doctor-specific fields -->
+        <div id="doctorFields" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Spécialité <span class="req">*</span></label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-stethoscope i-icon"></i>
+                <select class="form-input">
+                  <option value="">Choisir…</option>
+                  <option>Médecine générale</option><option>Cardiologie</option><option>Neurologie</option>
+                  <option>Pédiatrie</option><option>Ophtalmologie</option><option>Dermatologie</option>
+                  <option>Orthopédie</option><option>Gynécologie</option><option>Pneumologie</option>
+                  <option>Endocrinologie</option><option>Psychiatrie</option><option>ORL</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Années d'expérience</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-award i-icon"></i>
+                <input type="number" class="form-input" placeholder="Ex: 10" min="0" max="50"/>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Numéro de licence médicale <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-id-card i-icon"></i>
+              <input type="text" class="form-input" placeholder="Ex: MED-2025-XXXXX"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="goTo(1)"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+          <button class="btn btn-primary" onclick="goTo(3)">Continuer <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Step 3: Account credentials -->
+      <div class="panel" id="panel3">
+        <div class="panel-title">Créez votre compte</div>
+        <div class="panel-subtitle">Choisissez un email et un mot de passe sécurisé.</div>
+        <div class="form-group">
+          <label class="form-label">Adresse email <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope i-icon"></i>
+            <input type="email" class="form-input" id="email" placeholder="votre@email.com" oninput="checkEmail(this)"/>
+          </div>
+          <div style="font-size:.72rem;color:var(--text-3);margin-top:.2rem" id="emailHint"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock i-icon"></i>
+            <input type="password" class="form-input" id="password" placeholder="Min. 8 caractères" oninput="checkStrength(this.value)"/>
+            <button type="button" class="pass-eye" onclick="togglePass('password','eye1')"><i id="eye1" class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%"></div></div>
+          <div class="strength-label" id="strengthLabel">Force du mot de passe</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmer le mot de passe <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock i-icon"></i>
+            <input type="password" class="form-input" id="confirm" placeholder="Répétez votre mot de passe" oninput="checkMatch()"/>
+            <button type="button" class="pass-eye" onclick="togglePass('confirm','eye2')"><i id="eye2" class="fa-solid fa-eye"></i></button>
+          </div>
+          <div style="font-size:.72rem;margin-top:.2rem" id="matchLabel"></div>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="terms"/>
+          <label class="checkbox-label" for="terms">J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a> de MediConnect.</label>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="goTo(2)"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+          <button class="btn btn-primary" onclick="submitForm()">Créer mon compte <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Step 4: Success -->
+      <div class="panel" id="panel4">
+        <div class="success-panel">
+          <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+          <h2>Compte créé avec succès !</h2>
+          <p id="successMsg">Bienvenue sur MediConnect. Vous pouvez maintenant accéder à votre espace personnel.</p>
+          <a href="login.html" class="btn btn-primary" style="display:inline-flex;margin-bottom:.75rem"><i class="fa-solid fa-right-to-bracket"></i>Se connecter maintenant</a>
+          <div class="divider">ou</div>
+          <a href="index.html" style="font-size:.875rem;color:var(--text-3);transition:color .2s" onmouseover="this.style.color='var(--teal-500)'" onmouseout="this.style.color='var(--text-3)'">← Retour à l'accueil</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentRole = '';
+    let currentStep = 1;
+
+    function selectRole(card, role) {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentRole = role;
+      document.getElementById('btnNext1').disabled = false;
+    }
+
+    function goTo(step) {
+      document.getElementById('panel' + currentStep).classList.remove('active');
+      document.getElementById('panel' + step).classList.add('active');
+
+      // Update step circles
+      for (let i = 1; i <= 4; i++) {
+        const sc = document.getElementById('sc' + i);
+        if (!sc) continue;
+        sc.className = 'step-circle ' + (i < step ? 'done' : i === step ? 'active' : 'pending');
+        if (i < step) sc.innerHTML = '<i class="fa-solid fa-check" style="font-size:.7rem"></i>';
+        else if (i > step) sc.innerHTML = i;
+      }
+      // Update lines
+      for (let i = 1; i <= 3; i++) {
+        const sl = document.getElementById('sl' + i);
+        if (sl) sl.className = 'step-line ' + (i < step ? 'done' : '');
+      }
+
+      // Show doctor fields
+      if (step === 2) {
+        const isDr = currentRole === 'doctor';
+        document.getElementById('doctorFields').style.display = isDr ? 'block' : 'none';
+        document.getElementById('doctorInfo').style.display = isDr ? 'block' : 'none';
+      }
+
+      currentStep = step;
+    }
+
+    function submitForm() {
+      const terms = document.getElementById('terms').checked;
+      if (!terms) { showToast('Veuillez accepter les conditions d\'utilisation', 'warning'); return; }
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Création…';
+      setTimeout(() => {
+        const msgs = {
+          patient: 'Bienvenue ! Votre compte patient est prêt. Vous pouvez dès maintenant chercher et consulter des médecins.',
+          doctor: 'Votre demande a été soumise. Notre équipe vérifiera vos informations et activera votre compte dans les 24–48h.',
+          secretary: 'Votre compte secrétaire est prêt. Un administrateur devra vous assigner un médecin.',
+          admin: 'Votre compte administrateur a été créé.'
+        };
+        document.getElementById('successMsg').textContent = msgs[currentRole] || msgs.patient;
+        goTo(4);
+      }, 1600);
+    }
+
+    function togglePass(id, iconId) {
+      const inp = document.getElementById(id);
+      const ic = document.getElementById(iconId);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      ic.className = inp.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+    }
+
+    function checkStrength(val) {
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const configs = [
+        { w: '0%', bg: 'transparent', lbl: 'Force du mot de passe' },
+        { w: '25%', bg: '#ef4444', lbl: '⚠ Très faible' },
+        { w: '50%', bg: '#f59e0b', lbl: '~ Moyen' },
+        { w: '75%', bg: '#3b82f6', lbl: '↑ Fort' },
+        { w: '100%', bg: '#22c55e', lbl: '✓ Très fort' }
+      ];
+      const c = configs[score];
+      fill.style.width = c.w; fill.style.background = c.bg;
+      label.textContent = c.lbl; label.style.color = c.bg || 'var(--text-3)';
+    }
+
+    function checkMatch() {
+      const p = document.getElementById('password').value;
+      const c = document.getElementById('confirm').value;
+      const lbl = document.getElementById('matchLabel');
+      if (!c) { lbl.textContent = ''; return; }
+      if (p === c) { lbl.textContent = '✓ Les mots de passe correspondent'; lbl.style.color = 'var(--success)'; }
+      else { lbl.textContent = '✕ Les mots de passe ne correspondent pas'; lbl.style.color = 'var(--danger)'; }
+    }
+
+    function checkEmail(inp) {
+      const hint = document.getElementById('emailHint');
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+      hint.textContent = inp.value ? (valid ? '✓ Email valide' : '✕ Format invalide') : '';
+      hint.style.color = valid ? 'var(--success)' : 'var(--danger)';
+    }
+
+    function showToast(msg, type='info') {
+      const colors = { success:'#22c55e', error:'#ef4444', warning:'#f59e0b', info:'#3b82f6' };
+      const icons  = { success:'fa-circle-check', error:'fa-circle-xmark', warning:'fa-triangle-exclamation', info:'fa-circle-info' };
+      const t = document.createElement('div');
+      t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid ${colors[type]};border-radius:12px;padding:.85rem 1.2rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:9999;font-size:.875rem;color:var(--text-1);max-width:320px`;
+      t.innerHTML = `<i class="fa-solid ${icons[type]}" style="color:${colors[type]}"></i>${msg}`;
+      document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
+    }
+  </script>
+</body>
+</html>
