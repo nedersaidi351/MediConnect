@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>MediConnect - Consultation Médicale en Ligne</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    app-root { display: block; }
+    #err { position:fixed;top:0;left:0;right:0;background:#dc2626;color:white;padding:12px;font-family:monospace;font-size:13px;z-index:99999;white-space:pre-wrap;display:none }
+  </style>
+  <script>
+    window.onerror = function(msg, src, line, col, err) {
+      var d = document.getElementById('err');
+      if (d) { d.style.display='block'; d.textContent = 'JS ERROR: ' + msg + '\n' + (err&&err.stack||''); }
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      var d = document.getElementById('err');
+      if (d) { d.style.display='block'; d.textContent = 'PROMISE ERROR: ' + (e.reason&&e.reason.message||e.reason) + '\n' + (e.reason&&e.reason.stack||''); }
+    });
+  </script>
+</head>
+<body class="mat-typography">
+  <div id="err"></div>
+  <app-root></app-root>
+</body>
+</html>
+
